@@ -293,11 +293,23 @@ header .stars{margin-left:0}header .sp{flex:1}
 <section id="v-opcions" class="view" hidden><div class="wrap band">
   <h2>Opcions</h2>
   <div class="grid2">
-    <div class="card">
+    <div>
+    <div class="card" style="margin-bottom:16px">
       <h3>Temps verbals</h3>
       <p class="muted">Activa només els que ja treballeu a classe. Pots anar afegint-ne.</p>
       <div class="stagebar"><button class="btn alt" data-preset="1">Nivell 1</button><button class="btn alt" data-preset="2">Nivells 1 i 2</button><button class="btn alt" data-preset="3">Tots</button></div>
       <div class="opt-list" id="tenseOpts"></div>
+    </div>
+      <div class="card" style="margin-bottom:16px">
+        <h3>Instal·la l'app</h3>
+        <p id="instState" class="muted"></p>
+        <div class="stagebar"><button class="btn" id="instBtn2">Com s'instal·la</button><button class="btn alt" id="helpBtn2">Ajuda</button></div>
+      </div>
+      <div class="card muted">
+        <h3 style="color:var(--ink)">Quant a</h3>
+        <p>guaitaAngles v0.5 · Suite Guaita Apps<br>© 2026 SBS BiM Consulting, Jordi Subirós<br>Llicència AGPL-3.0-only · <a href="https://github.com/subi2/guaitaAngles" target="_blank" rel="noopener" style="color:inherit">Codi font</a></p>
+        <p>Anglès britànic (have got). La veu és la del mateix dispositiu i no s'envia res a cap servidor. El progrés es desa només en aquest navegador.</p>
+      </div>
     </div>
     <div>
       <div class="card opt-list" style="margin-bottom:16px">
@@ -318,16 +330,6 @@ header .stars{margin-left:0}header .sp{flex:1}
         <h3>Progrés</h3>
         <div id="stats"></div>
         <button class="btn alt" id="reset" style="margin-top:10px">Esborra el progrés</button>
-      </div>
-      <div class="card" style="margin-bottom:16px">
-        <h3>Instal·la l'app</h3>
-        <p id="instState" class="muted"></p>
-        <div class="stagebar"><button class="btn" id="instBtn2">Com s'instal·la</button><button class="btn alt" id="helpBtn2">Ajuda</button></div>
-      </div>
-      <div class="card muted">
-        <h3 style="color:var(--ink)">Quant a</h3>
-        <p>guaitaAngles v0.5 · Suite Guaita Apps<br>© 2026 SBS BiM Consulting, Jordi Subirós<br>Llicència AGPL-3.0-only · <a href="https://github.com/subi2/guaitaAngles" target="_blank" rel="noopener" style="color:inherit">Codi font</a></p>
-        <p>Anglès britànic (have got). La veu és la del mateix dispositiu i no s'envia res a cap servidor. El progrés es desa només en aquest navegador.</p>
       </div>
     </div>
   </div>
