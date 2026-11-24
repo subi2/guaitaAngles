@@ -12,7 +12,7 @@
 <link rel="icon" type="image/svg+xml" href="../icones/favicon.svg">
 <title>guaitaAngles</title>
 <!--
-  guaitaAngles v0.3.0 — Verbs en anglès, peça a peça (formes verbals per a nens i nenes de 12 anys)
+  guaitaAngles v0.3.1 — Verbs en anglès, peça a peça (formes verbals per a nens i nenes de 12 anys)
   Suite Guaita Apps
   Copyright (C) 2026 SBS BiM Consulting, Jordi Subirós
   SPDX-License-Identifier: AGPL-3.0-only
@@ -184,6 +184,8 @@ body.tr .cabtn{transform:scale(1.12);background:var(--cs)}
 .tx-s{color:var(--cs)}.tx-a{color:var(--ca)}.tx-g{color:var(--cg)}.tx-n{color:var(--cn)}.tx-v{color:var(--cv)}
 @media(max-width:700px){.cj thead{display:none}.cj tr{display:grid;padding:8px 0;border-top:2px dashed var(--line)}.cj td{border:0;padding:2px 0}.cj td::before{content:attr(data-l);display:block;font-size:12px;color:var(--mut);font-weight:700}}
 .cjcard{margin-bottom:18px}
+.line.al{flex-wrap:nowrap;align-items:flex-start;gap:10px}.al .slot{display:inline-flex;gap:10px;flex:none}.al .rest{display:flex;flex-wrap:wrap;gap:10px;flex:1 1 0}
+.alr{display:flex;gap:.5em;align-items:baseline}.alr .slot{flex:none;white-space:nowrap}.alr .rest{flex:1 1 0}
 .hbtn{flex:none;min-height:44px;min-width:44px;border-radius:999px;border:2px solid var(--line);background:var(--card);font-weight:800;font-size:16px;padding:6px 14px}
 header .stars{margin-left:0}header .sp{flex:1}
 @media(max-width:560px){header .sub{display:none}header{gap:8px}#instBtn{display:none}}
@@ -233,7 +235,7 @@ header .stars{margin-left:0}header .sp{flex:1}
       <label id="verbLbl">Verb <select id="verbSel"></select></label>
     </div>
     <div class="grid2">
-      <div class="card"><div class="stagebar" style="justify-content:space-between;margin-bottom:8px"><h3 id="tblTitle" style="margin:0">Totes les persones</h3><button class="btn alt" data-readall="tbl">Llegeix-ho tot</button></div><div class="rows" id="tbl"></div></div>
+      <div class="card"><div class="stagebar" style="justify-content:space-between;margin-bottom:8px"><h3 id="tblTitle" style="margin:0">Totes les persones</h3><button class="sw" data-align aria-label="Alinea les columnes per frase o pel verb"><em>Alinea</em><span>Frase</span><span>Verb</span></button><button class="btn alt" data-readall="tbl">Llegeix-ho tot</button></div><div class="rows" id="tbl"></div></div>
       <div class="card" id="mnCard"></div>
     </div>
   </div></div>
@@ -247,7 +249,7 @@ header .stars{margin-left:0}header .sp{flex:1}
 <!-- CONJUGA -->
 <section id="v-conjuga" class="view" hidden><div class="wrap band">
   <h2>Conjugació</h2>
-  <div class="pick"><label>Verb <select id="conjVerb"></select></label><button class="sw" data-contr aria-label="Formes llargues o curtes"><em>Formes</em><span>do not</span><span>don't</span></button><button class="btn alt" data-readall="conj">Llegeix-ho tot</button></div>
+  <div class="pick"><label>Verb <select id="conjVerb"></select></label><button class="sw" data-contr aria-label="Formes llargues o curtes"><em>Formes</em><span>do not</span><span>don't</span></button><button class="sw" data-align aria-label="Alinea les columnes per frase o pel verb"><em>Alinea</em><span>Frase</span><span>Verb</span></button><button class="btn alt" data-readall="conj">Llegeix-ho tot</button></div>
   <div id="conjList"></div>
 </div></section>
 
@@ -309,7 +311,7 @@ header .stars{margin-left:0}header .sp{flex:1}
       </div>
       <div class="card muted">
         <h3 style="color:var(--ink)">Quant a</h3>
-        <p>guaitaAngles v0.3.0 · Suite Guaita Apps<br>© 2026 SBS BiM Consulting, Jordi Subirós<br>Llicència AGPL-3.0-only · <a href="https://github.com/subi2/guaitaAngles" target="_blank" rel="noopener" style="color:inherit">Codi font</a></p>
+        <p>guaitaAngles v0.3.1 · Suite Guaita Apps<br>© 2026 SBS BiM Consulting, Jordi Subirós<br>Llicència AGPL-3.0-only · <a href="https://github.com/subi2/guaitaAngles" target="_blank" rel="noopener" style="color:inherit">Codi font</a></p>
         <p>Anglès britànic (have got). La veu és la del mateix dispositiu i no s'envia res a cap servidor. El progrés es desa només en aquest navegador.</p>
       </div>
     </div>
@@ -658,10 +660,16 @@ function tr(T,sub,v,c,form,yes,noT){
  const s=[SCA[sub.t]??SCA[sub.p],form==='neg'?'no':'',vp,cm,T.time&&!noT?TIMEC[T.time]:''].filter(Boolean).join(' ');
  return cap(s)+(form==='q'?'?':'.')}
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-function blocks(tk,pre=''){return '<div class="line">'+groups(tk).map((g,gi)=>'<span class="bk" data-k="'+pre+g[0].k+'">'+g.map((o,i)=>{let t=o.t;if(gi===0&&i===0)t=cap(t);return '<span class="sg '+(o.blank?'blank':'r-'+o.r)+'">'+esc(o.blank?'____':t)+'</span>'}).join('')+'</span>').join('')+'</div>'}
+function split3(tk){const g=groups(tk);let si=g.findIndex(x=>x.some(o=>o.r==='s'));if(si<0)si=0;return{pre:g.slice(0,si),sub:g[si],rest:g.slice(si+1)}}
+function bkHTML(g,gi,pre){return '<span class="bk" data-k="'+pre+g[0].k+'">'+g.map((o,i)=>{let t=o.t;if(gi===0&&i===0)t=cap(t);return '<span class="sg '+(o.blank?'blank':'r-'+o.r)+'">'+esc(o.blank?'____':t)+'</span>'}).join('')+'</span>'}
+function blocks(tk,pre='',al){
+ if(!al)return '<div class="line">'+groups(tk).map((x,i)=>bkHTML(x,i,pre)).join('')+'</div>';
+ const S=split3(tk),n=S.pre.length;
+ return '<div class="line al">'+(n?'<span class="slot" data-sl="'+al+'p">'+S.pre.map((x,i)=>bkHTML(x,i,pre)).join('')+'</span>':'')+'<span class="slot" data-sl="'+al+'s">'+bkHTML(S.sub,n,pre)+'</span><span class="rest">'+S.rest.map((x,i)=>bkHTML(x,n+1+i,pre)).join('')+'</span></div>'}
+function alignSlots(root){if(!root)return;const sl=[...root.querySelectorAll('.slot')],m={};sl.forEach(x=>x.style.minWidth='');sl.forEach(x=>{const k=x.dataset.sl,w=x.getBoundingClientRect().width;if(!(k in m)||w>m[k])m[k]=w});sl.forEach(x=>x.style.minWidth=m[x.dataset.sl]+'px')}
 
 /* ================= ESTAT ================= */
-const DEF={t:['be','hg','can','ps','pc','bep','pas'],contr:true,time:true,slow:false,auto:false,ph:'cat',irr:'0',ex:['build','gap','sa','irr']};
+const DEF={t:['be','hg','can','ps','pc','bep','pas'],contr:true,time:true,align:true,slow:false,auto:false,ph:'cat',irr:'0',ex:['build','gap','sa','irr']};
 let O=load('guaitaAngles.opts',DEF),ST=load('guaitaAngles.stats',{stars:0,t:{}});
 O={...DEF,...O};
 function load(k,d){try{const v=JSON.parse(localStorage.getItem(k));return v||structuredClone(d)}catch(e){return structuredClone(d)}}
@@ -669,8 +677,9 @@ function save(){try{localStorage.setItem('guaitaAngles.opts',JSON.stringify(O));
 const B={t:'ps',pi:2,v:'play',c:0,f:'pos'};
 const $=s=>document.querySelector(s);
 const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
-const rnd=a=>a[Math.floor(Math.random()*a.length)];
-const shuf=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+let RS=null;const RR=()=>RS===null?Math.random():((RS=(Math.imul(RS,1664525)+1013904223)>>>0)/4294967296);
+const rnd=a=>a[Math.floor(RR()*a.length)];
+const shuf=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(RR()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
 const enabled=()=>TENSES.filter(t=>O.t.includes(t.id));
 const SPK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9z" fill="currentColor"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg>';
 
@@ -687,7 +696,7 @@ function stopRead(silent){if(!RQ)return;const r=RQ;RQ=null;r.btn.textContent='Ll
 function readAll(box,btn){if(RQ){stopRead();return}if(!HAS_TTS){toast('Aquest navegador no té veu.');return}const items=[...box.querySelectorAll('[data-rs]')];if(!items.length)return;try{speechSynthesis.cancel()}catch(e){}RQ={items,i:0,btn};btn.textContent='Atura la lectura';step()}
 function step(){if(!RQ)return;document.querySelectorAll('.reading').forEach(e=>e.classList.remove('reading'));if(RQ.i>=RQ.items.length){stopRead(true);return}const el=RQ.items[RQ.i++];el.classList.add('reading');if(el.scrollIntoView)el.scrollIntoView({block:'nearest',behavior:RM?'auto':'smooth'});say(el.dataset.rs,step)}
 function ph(ipa){if(!ipa||O.ph==='none')return'';const c=catPh(ipa),i='/'+ipa+'/';return '<span class="ph">'+esc(O.ph==='ipa'?i:O.ph==='both'?c+'   '+i:c)+'</span>'}
-function syncSw(){document.querySelectorAll('[data-time]').forEach(b=>{b.setAttribute('aria-pressed',O.time);const sp=b.querySelectorAll('span');sp[0].className=O.time?'':'on';sp[1].className=O.time?'on':''});document.querySelectorAll('[data-contr]').forEach(b=>{b.setAttribute('aria-pressed',O.contr);const sp=b.querySelectorAll('span');sp[0].className=O.contr?'':'on';sp[1].className=O.contr?'on':''})}
+function syncSw(){document.querySelectorAll('[data-align]').forEach(b=>{b.setAttribute('aria-pressed',O.align);const sp=b.querySelectorAll('span');sp[0].className=O.align?'':'on';sp[1].className=O.align?'on':''});document.querySelectorAll('[data-time]').forEach(b=>{b.setAttribute('aria-pressed',O.time);const sp=b.querySelectorAll('span');sp[0].className=O.time?'':'on';sp[1].className=O.time?'on':''});document.querySelectorAll('[data-contr]').forEach(b=>{b.setAttribute('aria-pressed',O.contr);const sp=b.querySelectorAll('span');sp[0].className=O.contr?'':'on';sp[1].className=O.contr?'on':''})}
 const SWH='<button class="sw" data-contr aria-label="Formes llargues o curtes"><em>Formes</em><span>do not</span><span>don\'t</span></button>';
 function irrCap(){return O.irr!=='0'?+O.irr:Math.max(1,...enabled().map(t=>t.lvl))}
 function autoStage(){if(O.auto)say(sentFor(curT(),P[B.pi],B.f).map(text).join(' '))}
@@ -725,8 +734,8 @@ function renderTable(){
  const T=curT(),F={pos:'Positive',neg:'Negative',q:'Question',sa:'Short answer'}[B.f];
  $('#tblTitle').textContent=F+' — totes les persones';
  $('#tbl').innerHTML=P.map(p=>{const ls=sentFor(T,p,B.f),ts=trFor(T,p,B.f);const s=ls.map(text).join(' ');
-  const one=(tk,i)=>'<div class="sm">'+blocks(tk)+'<div class="ca">'+esc(ts[i])+'</div></div>';
-  return '<div class="row" data-rs="'+esc(s)+'">'+(ls.length>1?'<div class="two">'+ls.map(one).join('')+'</div>':one(ls[0],0))+'<button class="say" data-say="'+esc(s)+'" aria-label="Escolta">'+SPK+'</button></div>'}).join('')}
+  const one=(tk,i)=>'<div class="sm">'+blocks(tk,'',O.align?'c'+i:'')+'<div class="ca">'+esc(ts[i])+'</div></div>';
+  return '<div class="row" data-rs="'+esc(s)+'">'+(ls.length>1?'<div class="two">'+ls.map(one).join('')+'</div>':one(ls[0],0))+'<button class="say" data-say="'+esc(s)+'" aria-label="Escolta">'+SPK+'</button></div>'}).join('');alignSlots($('#tbl'))}
 function timeline(k){
  const L=20,R=300,y=44,now=200;
  let g='<line x1="'+L+'" y1="'+y+'" x2="'+R+'" y2="'+y+'" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><path d="M'+(R-8)+' '+(y-6)+'L'+(R+2)+' '+y+'L'+(R-8)+' '+(y+6)+'" fill="none" stroke="currentColor" stroke-width="3"/>';
@@ -757,11 +766,11 @@ const EXT={build:'Transforma la frase',gap:'Omple el buit',sa:'Resposta curta',i
 let EX=null;
 const lc=w=>w; // les paraules ja surten en minúscula (només I, noms i English porten majúscula)
 function argsFor(T){const v=rnd(V);return[v,T.cm?rnd(T.cm):v.c]}
-function makeQ(only){
+function makeQ0(only){
  const types=only?[only]:(O.ex.length?O.ex:['build']);
  const type=rnd(types),en=enabled();
  if(type==='irr'||!en.length){
-  const pool=IRRL.filter(x=>x.lvl<=irrCap()),v=rnd(pool),usePP=O.t.includes('pp')&&Math.random()<.4,ok=usePP?v.pp:v.p;
+  const pool=IRRL.filter(x=>x.lvl<=irrCap()),v=rnd(pool),usePP=O.t.includes('pp')&&RR()<.4,ok=usePP?v.pp:v.p;
   const o=rnd(pool.filter(x=>x!==v));const c=new Set([/e$/.test(v.b)?v.b+'d':v.b+'ed',v.b,usePP?v.p:v.pp,usePP?o.pp:o.p,v.b+'ing']);c.delete(ok);
   const G=GROUPS[grp(v)];
   return{type:'irr',tid:'irr',vb:v.b,ask:'Quin és el '+(usePP?'participi (3a columna)':'passat (2a columna)')+' de <b>'+esc(v.b)+'</b>?',sayQ:v.b,ca:v.ca,
@@ -784,7 +793,7 @@ function makeQ(only){
   tk[i]={...tk[i],blank:1};
   return{type,tid:T.id,T,form,tk,ok,ca:tr(T,sub,v,c,form),opts:shuf([ok,...shuf(ds).slice(0,3)]),ask:'Tria la paraula que falta <span class="muted">('+esc(T.n)+')</span>',full:text(gen(T,sub,v,c,form))}}
  // short answer
- const sub=rnd(EXS.filter(s=>s.p!=='I')),yes=Math.random()<.5,ans=sub.p==='you'?{t:'I',p:'I'}:{t:sub.p,p:sub.p};
+ const sub=rnd(EXS.filter(s=>s.p!=='I')),yes=RR()<.5,ans=sub.p==='you'?{t:'I',p:'I'}:{t:sub.p,p:sub.p};
  const q=contract(gen(T,sub,v,c,'q'),'q',O.contr),okTk=contract(gen(T,ans,v,c,'sa',yes),'sa',O.contr),ok=text(okTk);
  const ds=new Set();
  T.sa.forEach(a=>{if(a!==T.aux(ans.p))ds.add(text(contract(gen(T,ans,v,c,'sa',yes,a),'sa',O.contr)))});
@@ -792,6 +801,7 @@ function makeQ(only){
  const a0=T.aux(ans.p);if(yes&&PC[a0]&&PRON.includes(ans.p))ds.add('Yes, '+ans.p+PC[a0]+'.');
  ds.delete(ok);
  return{type:'sa',tid:T.id,T,form:'sa',q,yes,ok,ca:tr(T,sub,v,c,'q'),opts:shuf([ok,...shuf([...ds]).slice(0,3)]),ask:'Respon amb una resposta curta <span class="muted">('+esc(T.n)+')</span>'}}
+function makeQ(only,seed){const sd=(seed==null?Math.floor(Math.random()*4294967296):seed)>>>0;RS=sd;try{const q=makeQ0(only);q.seed=sd;return q}finally{RS=null}}
 function startRound(only){EX={i:0,res:[],only,q:makeQ(only),done:false};renderEx();autoQ();if(location.hash!=='#exercicis')location.hash='exercicis'}
 function dotsHTML(){let s='';for(let i=0;i<10;i++)s+='<span class="'+(EX.res[i]===true?'ok':EX.res[i]===false?'ko':i===EX.i?'now':'')+'"></span>';return '<div class="dots" aria-label="Pregunta '+(EX.i+1)+' de 10">'+s+'</div>'}
 function renderEx(){
@@ -805,18 +815,24 @@ function renderEx(){
  else if(q.type==='sa')h+='<div class="md">'+blocks(q.q)+'<div class="ca">'+esc(q.ca)+'</div></div><p style="margin-top:10px">Respon que <span class="yn" style="background:'+(q.yes?'var(--ok)':'var(--ko)')+'">'+(q.yes?'SÍ':'NO')+'</span></p>'+optsHTML(q);
  else h+='<div class="stagebar"><button class="btn alt" data-say="'+esc(q.sayQ)+'">'+SPK+' Escolta</button></div><div class="ca">'+esc(q.ca)+'</div>'+optsHTML(q);
  h+='<div id="fbBox"></div>';
- box.innerHTML=h;syncSw()}
+ box.innerHTML=h;syncSw();if(EX.done)showFb(EX.res[EX.i])}
 function optsHTML(q){return '<div class="opts">'+q.opts.map(o=>'<button class="opt" data-o="'+esc(o)+'">'+esc(o)+'</button>').join('')+'</div>'}
 function answer(right,shown){
  if(EX.done)return;EX.done=true;const q0=EX.q;EX.res[EX.i]=right;
  const r=ST.t[EX.q.tid]||(ST.t[EX.q.tid]={ok:0,n:0});r.n++;if(right){r.ok++;ST.stars++}
  if(q0.type==='irr'){ST.v=ST.v||{};const z=ST.v[q0.vb]||(ST.v[q0.vb]={ok:0,n:0});z.n++;if(right)z.ok++}save();$('#starN').textContent=ST.stars;
+ showFb(right)}
+function showFb(right){
  const q=EX.q,why=q.type==='irr'?q.why:q.T.why[q.form];
  const sol=q.type==='build'?'<div class="sm" style="margin:6px 0">'+blocks(q.tgt)+'</div>':q.type==='irr'?'<p>'+esc(q.full)+'</p>':q.type==='gap'?'<p>'+esc(q.full)+'</p>':'<p>'+esc(q.ok)+'</p>';
  const sayTxt=q.type==='build'?text(q.tgt):q.type==='irr'?q.full:q.type==='gap'?q.full:q.ok;
  $('#fbBox').innerHTML='<div class="fb '+(right?'ok':'ko')+'"><b>'+(right?'Molt bé! ★':'Gairebé! La resposta correcta és:')+'</b>'+(right?'':sol)+'<p style="margin:6px 0 0">'+esc(why)+'</p></div><div class="stagebar"><button class="btn" id="nextQ">Següent</button><button class="btn alt" data-say="'+esc(sayTxt)+'">'+SPK+' Escolta</button></div>';
  const ex=$('#exAct');if(ex)ex.hidden=true;
+ document.querySelectorAll('.opt').forEach(b=>{b.disabled=true;b.classList.remove('right','wrong');if(b.dataset.o===q.ok)b.classList.add('right');else if(b.dataset.o===EX.pick)b.classList.add('wrong')});
+ if(EX.got&&$('#ansLine'))$('#ansLine').innerHTML=EX.got.map(w=>'<span class="tile">'+esc(w)+'</span>').join('');
+ {const pl=$('#pool');if(pl)pl.hidden=true}
  $('#nextQ').focus()}
+
 function statsHTML(){
  const rows=[...enabled().map(t=>[t.n,ST.t[t.id]]),['Verbs irregulars',ST.t.irr]];
  return rows.map(([n,r])=>{const pc=r&&r.n?Math.round(100*r.ok/r.n):0;return '<div class="statrow"><span>'+esc(n)+'</span><div class="meter"><i style="width:'+pc+'%"></i></div><span class="muted" style="width:4.5em;text-align:right;white-space:nowrap">'+(r&&r.n?pc+'%':'—')+'</span></div>'}).join('')}
@@ -844,18 +860,20 @@ function renderVerbs(){
   else $('#verbList').innerHTML=head+'<div class="card"><table class="vt">'+TH+'<tbody>'+irrRows(L)+'</tbody></table></div>'}
  else $('#verbList').innerHTML='<div class="card"><h3>Regulars: només cal afegir -ed</h3><p class="muted">El color et diu com sona la -ed: <span class="ed ed-t">/t/</span> <span class="ed ed-d">/d/</span> <span class="ed ed-id">/ɪd/</span></p><table class="vt"><thead><tr><th>Infinitiu</th><th>Passat i participi</th><th>So</th></tr></thead><tbody>'+REG.map(v=>'<tr data-rs="'+esc(v.b+', '+pastF(v))+'"><td>'+sb(v.b)+'<div class="ca">'+esc(v.ca)+'</div></td><td>'+sb(pastF(v))+'</td><td><span class="ed ed-'+v.ed+'">/'+(v.ed==='id'?'ɪd':v.ed)+'/</span></td></tr>').join('')+'</tbody></table></div>'}
 let CJ='go';
+function inlA(tk,c){const S=split3(tk),n=S.pre.length,f=(g,gi)=>g.map((o,i)=>{let t=o.t;if(gi===0&&i===0)t=cap(t);return '<span class="tx-'+o.r+'">'+esc(t)+'</span>'}).join('');
+ return '<span class="alr">'+(n?'<span class="slot" data-sl="'+c+'p">'+S.pre.map((x,i)=>f(x,i)).join(' ')+'</span>':'')+'<span class="slot" data-sl="'+c+'s">'+f(S.sub,n)+'</span><span class="rest">'+S.rest.map((x,i)=>f(x,n+1+i)).join(' ')+'</span></span>'}
 function inl(tk){return groups(tk).map((g,gi)=>g.map((o,i)=>{let t=o.t;if(gi===0&&i===0)t=cap(t);return '<span class="tx-'+o.r+'">'+esc(t)+'</span>'}).join('')).join(' ')}
 function renderConj(){
  const v=V.find(x=>x.b===CJ)||V[0],o=x=>'<option value="'+x.b+'"'+(x.b===v.b?' selected':'')+'>'+x.b+' — '+esc(x.ca)+'</option>';
  $('#conjVerb').innerHTML='<optgroup label="Regulars">'+REG.map(o).join('')+'</optgroup><optgroup label="Irregulars">'+IRR.map(o).join('')+'</optgroup>';
  $('#conjList').innerHTML=enabled().map(T=>{
-  const rows=P.map(p=>{const cell=f=>{const tk=contract(gen(T,p,v,'',f,undefined,undefined,1),f,O.contr);return[inl(tk),text(tk),tr(T,p,v,'',f,undefined,1)]};
+  const rows=P.map(p=>{const cell=f=>{const tk=contract(gen(T,p,v,'',f,undefined,undefined,1),f,O.contr);return[O.align?inlA(tk,f):inl(tk),text(tk),tr(T,p,v,'',f,undefined,1)]};
    const a=cell('pos'),b=cell('neg'),c=cell('q'),y=contract(gen(T,p,v,'','sa',true),'sa',O.contr),n=contract(gen(T,p,v,'','sa',false),'sa',O.contr);
    const rs=[a[1],b[1],c[1],text(y),text(n)].join(' ');
    const td=(l,x)=>'<td data-l="'+l+'">'+x[0]+'<div class="ca">'+esc(x[2])+'</div></td>';
-   return '<tr data-rs="'+esc(rs)+'">'+td('Positive',a)+td('Negative',b)+td('Question',c)+'<td data-l="Short answer">'+inl(y)+'<br>'+inl(n)+'<div class="ca">'+esc(tr(T,p,v,'','sa',true)+' '+tr(T,p,v,'','sa',false))+'</div></td><td><button class="say" data-say="'+esc(rs)+'" aria-label="Escolta">'+SPK+'</button></td></tr>'}).join('');
+   return '<tr data-rs="'+esc(rs)+'">'+td('Positive',a)+td('Negative',b)+td('Question',c)+'<td data-l="Short answer">'+(O.align?inlA(y,'sa')+inlA(n,'sa'):inl(y)+'<br>'+inl(n))+'<div class="ca">'+esc(tr(T,p,v,'','sa',true)+' '+tr(T,p,v,'','sa',false))+'</div></td><td><button class="say" data-say="'+esc(rs)+'" aria-label="Escolta">'+SPK+'</button></td></tr>'}).join('');
   return '<div class="card cjcard"><h3>'+esc(T.n)+' <span class="muted">· '+esc(T.ca)+'</span></h3><table class="cj"><thead><tr><th>Positive</th><th>Negative</th><th>Question</th><th>Short answer</th><th></th></tr></thead><tbody>'+rows+'</tbody></table></div>'}).join('');
- syncSw()}
+ $('#conjList').querySelectorAll('.cj').forEach(alignSlots);syncSw()}
 function renderTips(){
  const ex=(arr)=>'<div class="ex">'+arr.map(([a,b])=>'<button data-say="'+esc(b)+'">'+esc(a)+' → <b>'+esc(b)+'</b></button>').join('')+'</div>';
  const sv=b=>({b});
@@ -891,7 +909,8 @@ addEventListener('hashchange',route);
 document.addEventListener('click',e=>{
  const t=e.target.closest('button,a');if(!t)return;
  if(t.dataset.say){say(t.dataset.say);return}
- if(t.dataset.contr!==undefined){O.contr=!O.contr;save();const v=curV();if(v==='frases')renderFrases();else if(v==='conjuga')renderConj();else if(v==='exercicis'){if(EX&&!EX.done&&EX.i<10)EX.q=makeQ(EX.only);renderEx()}syncSw();return}
+ if(t.dataset.align!==undefined){O.align=!O.align;save();if(curV()==='conjuga')renderConj();else renderFrases();return}
+ if(t.dataset.contr!==undefined){O.contr=!O.contr;save();const v=curV();if(v==='frases')renderFrases();else if(v==='conjuga')renderConj();else if(v==='exercicis'){if(EX&&EX.q&&EX.i<10)EX.q=makeQ(EX.only,EX.q.seed);renderEx()}syncSw();return}
  if(t.dataset.time!==undefined){O.time=!O.time;save();renderFrases();return}
  if(t.dataset.readall){readAll($({tbl:'#tbl',conj:'#conjList',verbs:'#verbList'}[t.dataset.readall]),t);return}
  if(t.dataset.sort){VS=t.dataset.sort;renderVerbs();return}
@@ -906,14 +925,14 @@ document.addEventListener('click',e=>{
  if(t.dataset.preset){const l=+t.dataset.preset;O.t=TENSES.filter(x=>x.lvl<=l).map(x=>x.id);save();renderOpts();return}
  if(t.id==='reset'){if(t.dataset.arm){ST={stars:0,t:{}};save();$('#starN').textContent=0;renderOpts();toast('Progrés esborrat.')}else{t.dataset.arm=1;t.textContent='Toca de nou per confirmar';setTimeout(()=>{delete t.dataset.arm;t.textContent='Esborra el progrés'},4000)}return}
  if(!EX||EX.i>=10)return;
- if(t.id==='nextQ'){EX.i++;EX.done=false;if(EX.i<10)EX.q=makeQ(EX.only);renderEx();autoQ();return}
- if(t.dataset.o!==undefined&&!EX.done){const right=t.dataset.o===EX.q.ok;
+ if(t.id==='nextQ'){EX.i++;EX.done=false;EX.pick=EX.got=null;if(EX.i<10)EX.q=makeQ(EX.only);renderEx();autoQ();return}
+ if(t.dataset.o!==undefined&&!EX.done){EX.pick=t.dataset.o;const right=t.dataset.o===EX.q.ok;
   document.querySelectorAll('.opt').forEach(b=>{b.disabled=true;if(b.dataset.o===EX.q.ok)b.classList.add('right');else if(b===t)b.classList.add('wrong')});
   answer(right);return}
  if(t.dataset.ti!==undefined&&!EX.done){t.classList.add('used');const c=document.createElement('button');c.className='tile';c.textContent=t.textContent;c.dataset.back=t.dataset.ti;$('#ansLine').appendChild(c);return}
  if(t.dataset.back!==undefined&&!EX.done){document.querySelector('[data-ti="'+t.dataset.back+'"]').classList.remove('used');t.remove();return}
  if(t.id==='clr'){$('#ansLine').innerHTML='';document.querySelectorAll('.tile.used').forEach(b=>b.classList.remove('used'));return}
- if(t.id==='chk'){const got=[...$('#ansLine').children].map(b=>lc(b.textContent)).join(' ');if(!got){toast('Toca les peces per formar la frase.');return}answer(got===EX.q.ok);return}
+ if(t.id==='chk'){EX.got=[...$('#ansLine').children].map(b=>b.textContent);const got=EX.got.map(lc).join(' ');if(!got){toast('Toca les peces per formar la frase.');return}answer(got===EX.q.ok);return}
 });
 document.addEventListener('change',e=>{
  const t=e.target;
@@ -956,7 +975,7 @@ function installHelp(){
  sheet('Instal·la guaitaAngles',(IOS?'<h3>A l\'iPad (Safari)</h3><ol><li>Toca el botó <span class="shot">Comparteix</span> (el quadrat amb una fletxa cap amunt, a dalt a la dreta).</li><li>Baixa i toca <span class="shot">Afegeix a la pantalla d\'inici</span>.</li><li>Toca <span class="shot">Afegeix</span>. Ja tens la icona dels quatre quadrats.</li></ol><p class="muted">Només Safari ho permet. Si l\'has obert amb un altre navegador, copia l\'adreça i obre-la a Safari.</p>':'<h3>Al navegador</h3><ul><li><b>Chrome o Edge:</b> menú ⋮ → «Instal·la l\'app» o «Afegeix a la pantalla d\'inici».</li><li><b>Safari (Mac):</b> menú Arxiu → «Afegeix al Dock».</li></ul>')+'<p>Un cop instal·lada, s\'obre a pantalla completa i funciona <b>sense connexió</b>.</p>')}
 function appHelp(){
  sheet('Com es fa servir',`<h3>Frases</h3><ul><li>Tria el <b>temps verbal</b> a dalt i la <b>forma</b>: Positive, Negative, Question o Short answer.</li><li>Cada color és una peça: blau subjecte, taronja auxiliar, vermell <i>not</i>, verd verb, lila la resta.</li><li>«Una altra frase» canvia la persona i el verb; «Escolta» la llegeix en veu alta.</li><li><b>Formes</b>: canvia entre <i>do not</i> i <i>don't</i>. <b>Paraules de temps</b>: mostra o amaga <i>every day</i>, <i>yesterday</i>…</li><li>To be, Have got i To be (past) són «verbs especials»: van sols, no fan servir el verb triat.</li></ul>
- <h3>Conjuga</h3><ul><li>Tria un verb i veuràs totes les persones de cada temps. «Llegeix-ho tot» el llegeix fila a fila.</li></ul>
+ <h3>Conjuga</h3><ul><li>Tria un verb i veuràs totes les persones de cada temps. «Llegeix-ho tot» el llegeix fila a fila.</li><li><b>Alinea</b> (Frase | Verb): amb «Verb» el pronom queda en una columna fixa i el verb comença sempre al mateix lloc. També és a la taula de Frases.</li></ul>
  <h3>Exercicis</h3><ul><li>Rondes de 10 preguntes. Cada encert val una estrella ★.</li><li>Pots triar els tipus d'exercici a Opcions.</li></ul>
  <h3>Verbs</h3><ul><li>Irregulars ordenats per patró, A–Z, més freqüents o els que fallo més. Hi ha cercador.</li><li>Toca una forma per escoltar-la. Un avís vermell indica que s'escriu igual però sona diferent.</li></ul>
  <h3>Botó CA</h3><ul><li>Mantén-lo <b>premut</b> per veure la traducció literal en català. En deixar-lo, s'amaga.</li></ul>
@@ -970,7 +989,7 @@ document.addEventListener('click',e=>{const t=e.target.closest('button');if(!t)r
 $('#ov').addEventListener('click',e=>{if(e.target.id==='ov')closeSheet()});
 addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#ov').hidden)closeSheet()});
 instUI();
-window.__GA={gen,contract,text,words,third,ingF,pastF,TB,V,makeQ,O,tr,IRRL,catPh,grp};
+window.__GA={gen,contract,text,words,third,ingF,pastF,TB,V,makeQ,O,tr,IRRL,catPh,grp,get EX(){return EX},get ST(){return ST},startRound};
 }
 </script>
 </body>
