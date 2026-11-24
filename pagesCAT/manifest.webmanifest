@@ -3,7 +3,7 @@
   "short_name": "guaitaAngles",
   "description": "Verbs en anglès, peça a peça: formes, conjugacions i exercicis.",
   "lang": "ca",
-  "start_url": "./guaitaAngles_0.3.1.html",
+  "start_url": "./guaitaAngles_0.4.html",
   "scope": "./",
   "display": "standalone",
   "background_color": "#1d1b3a",

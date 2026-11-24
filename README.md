@@ -17,7 +17,7 @@ Forma part de la suite **Guaita Apps**. És un únic fitxer HTML, sense dependè
 
 ## Com s'usa
 
-Obre `index.html` (landing) o directament `pagesCAT/guaitaAngles_0.3.1.html`.
+Obre `index.html` (landing) o directament `pagesCAT/guaitaAngles_0.4.html`.
 
 ### Instal·lar-la a l'iPad
 1. Obre l'adreça de l'app amb **Safari** (cal https, p. ex. GitHub Pages).
@@ -30,7 +30,7 @@ Obre `index.html` (landing) o directament `pagesCAT/guaitaAngles_0.3.1.html`.
 
 ```
 index.html                       landing
-pagesCAT/guaitaAngles_0.3.1.html   l'app
+pagesCAT/guaitaAngles_0.4.html   l'app
 pagesCAT/manifest.webmanifest    manifest PWA
 pagesCAT/sw.js                   service worker (ús sense connexió)
 pagesCAT/HLP guaitaAngles-ajuda.html   manual d'ús

@@ -2,7 +2,7 @@
 <html lang="ca">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="guaitaAngles">
@@ -12,7 +12,7 @@
 <link rel="icon" type="image/svg+xml" href="../icones/favicon.svg">
 <title>guaitaAngles</title>
 <!--
-  guaitaAngles v0.3.1 — Verbs en anglès, peça a peça (formes verbals per a nens i nenes de 12 anys)
+  guaitaAngles v0.4 — Verbs en anglès, peça a peça (formes verbals per a nens i nenes de 12 anys)
   Suite Guaita Apps
   Copyright (C) 2026 SBS BiM Consulting, Jordi Subirós
   SPDX-License-Identifier: AGPL-3.0-only
@@ -166,9 +166,15 @@ nav a[aria-current=page]{background:var(--sun);color:var(--sunink)}
 .sw span{padding:6px 14px;border-radius:999px;white-space:nowrap}
 .sw em{font-style:normal;font-size:13px;font-weight:700;padding:0 8px 0 8px;opacity:.8}
 .sw .on{background:var(--ink);color:var(--bg)}.stage .sw .on{background:var(--sunink);color:#fff}
-.ca{display:none;font-size:15px;font-style:italic;font-weight:600;color:var(--mut);margin-top:2px}
-body.tr .ca{display:block}
-.stage .ca{font-size:clamp(17px,2.2vw,22px);color:var(--sunink);opacity:.85}
+.ca{display:block;height:16px;line-height:16px;font-size:12px;font-style:italic;font-weight:600;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;visibility:hidden;pointer-events:none}
+body.tr .ca{visibility:visible}
+.stage .ca{font-size:clamp(13px,1.7vw,17px);height:1.4em;line-height:1.4em;color:var(--sunink);opacity:.85}
+.ex button .ca{text-align:left;font-weight:600}
+html,body{overscroll-behavior-x:none;touch-action:pan-y}.chips{touch-action:pan-x pan-y}
+#rbar{position:fixed;left:100px;right:12px;bottom:calc(84px + env(safe-area-inset-bottom));z-index:5;display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end;background:var(--bar);color:#fff;border-radius:18px;padding:8px;box-shadow:0 6px 18px #0005;-webkit-user-select:none;user-select:none}
+#rbar button{min-height:40px;border:0;border-radius:12px;padding:4px 12px;background:#ffffff22;color:#fff;font-weight:800;font-size:14px}
+#rbar button[aria-pressed=true]{background:var(--sun);color:var(--sunink)}
+.grpl{font-weight:700;margin:8px 0 4px}
 .cabtn{position:fixed;left:max(16px,env(safe-area-inset-left));bottom:calc(84px + env(safe-area-inset-bottom));width:72px;height:72px;border-radius:50%;border:4px solid #fff;background:var(--cc);color:#fff;font-weight:900;font-size:22px;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;box-shadow:0 6px 16px rgba(0,0,0,.3);z-index:6;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;touch-action:none}
 .cabtn small{font-size:11px;font-weight:700;margin-top:3px}
 body.tr .cabtn{transform:scale(1.12);background:var(--cs)}
@@ -205,6 +211,7 @@ header .stars{margin-left:0}header .sp{flex:1}
   <div><h1>guaitaAngles</h1><div class="sub">Verbs en anglès, peça a peça</div></div>
   <span class="sp"></span>
   <button class="hbtn" id="instBtn" hidden>Instal·la</button>
+  <button class="hbtn" id="szBtn" aria-label="Mida del text i dels botons">Aa</button>
   <button class="hbtn" id="helpBtn" aria-label="Ajuda">?</button>
   <div class="stars" aria-label="Estrelles guanyades"><b>★</b> <span id="starN">0</span></div>
 </header>
@@ -260,11 +267,16 @@ header .stars{margin-left:0}header .sp{flex:1}
     <button class="chip" data-vt="reg" aria-pressed="false">Regulars</button>
   </div>
   <div id="irrCtl" style="margin:10px 0">
-    <div class="muted" style="font-weight:700;margin-bottom:4px">Ordena</div>
-    <div class="chips" id="sortChips" role="group" aria-label="Ordre">
-      <button class="chip" data-sort="pat">Per patró</button><button class="chip" data-sort="az">A – Z</button><button class="chip" data-sort="fr">Més freqüents</button><button class="chip" data-sort="ko">Els que fallo més</button>
+    <div class="muted" style="font-weight:700;margin-bottom:4px">Agrupa</div>
+    <div class="chips" id="grpChips" role="group" aria-label="Agrupació">
+      <button class="chip" data-grp="pat">Per patró</button><button class="chip" data-grp="none">Sense grups</button>
     </div>
-    <input class="search" id="vSearch" type="search" placeholder="Cerca un verb (anglès o català)" aria-label="Cerca un verb" autocomplete="off" style="margin-top:8px">
+    <div class="muted" style="font-weight:700;margin:4px 0">Ordena (dins de cada grup)</div>
+    <div class="chips" id="sortChips" role="group" aria-label="Ordre">
+      <button class="chip" data-sort="fr">Més freqüents</button><button class="chip" data-sort="az">A – Z</button><button class="chip" data-sort="ko">Els que fallo més</button>
+    </div>
+    <input class="search" id="vSearch" type="search" placeholder="Cerca un verb (anglès o català)" aria-label="Cerca un verb en anglès o en català" autocomplete="off" style="margin-top:8px">
+    <p class="note" style="margin:4px 0 0">Pots cercar en català: «anar» troba <b>go</b>.</p>
   </div>
   <div class="stagebar" style="margin:6px 0 18px"><button class="btn" id="irrGame">Practica els irregulars</button><button class="btn alt" data-readall="verbs">Llegeix-ho tot</button></div>
   <div id="verbList"></div>
@@ -290,6 +302,7 @@ header .stars{margin-left:0}header .sp{flex:1}
       <div class="card opt-list" style="margin-bottom:16px">
         <h3>Com es mostra</h3>
         <label><input type="checkbox" id="oAuto"> Llegeix automàticament cada frase nova</label>
+        <label>Mida de la pantalla <select id="oSize"><option value="s">S · petita</option><option value="m">M · mitjana</option><option value="l">L · gran</option></select></label>
         <label><input type="checkbox" id="oSlow"> Veu lenta</label>
         <label>Fonètica <select id="oPh"><option value="cat">A la catalana</option><option value="ipa">IPA</option><option value="both">Totes dues</option><option value="none">Cap</option></select></label>
         <label>Verbs irregulars <select id="oIrr"><option value="0">Segons els nivells actius</option><option value="1">Llista nivell 1</option><option value="2">Llista nivell 2</option><option value="3">Llista completa</option></select></label>
@@ -311,7 +324,7 @@ header .stars{margin-left:0}header .sp{flex:1}
       </div>
       <div class="card muted">
         <h3 style="color:var(--ink)">Quant a</h3>
-        <p>guaitaAngles v0.3.1 · Suite Guaita Apps<br>© 2026 SBS BiM Consulting, Jordi Subirós<br>Llicència AGPL-3.0-only · <a href="https://github.com/subi2/guaitaAngles" target="_blank" rel="noopener" style="color:inherit">Codi font</a></p>
+        <p>guaitaAngles v0.4 · Suite Guaita Apps<br>© 2026 SBS BiM Consulting, Jordi Subirós<br>Llicència AGPL-3.0-only · <a href="https://github.com/subi2/guaitaAngles" target="_blank" rel="noopener" style="color:inherit">Codi font</a></p>
         <p>Anglès britànic (have got). La veu és la del mateix dispositiu i no s'envia res a cap servidor. El progrés es desa només en aquest navegador.</p>
       </div>
     </div>
@@ -329,6 +342,7 @@ header .stars{margin-left:0}header .sp{flex:1}
 </nav>
 <div class="toast" id="toast" role="status"></div>
 <div class="ov" id="ov" hidden><div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="shTitle" tabindex="-1"></div></div>
+<div id="rbar" hidden role="toolbar" aria-label="Control de la lectura"><button data-rc="from">▶ Des d'aquí</button><button data-rc="sel">🔊 Selecció</button><button data-rc="prev" hidden>⏮</button><button data-rc="pause" hidden>⏸ Pausa</button><button data-rc="next" hidden>⏭</button><button data-rc="stop" hidden>⏹ Atura</button><button data-rc="follow" aria-pressed="true">Segueix</button><button data-rc="x" aria-label="Tanca">✕</button></div>
 <button class="cabtn" id="caBtn" aria-label="Mantén premut per veure la traducció al català">CA<small>mantén</small></button>
 
 <script>
@@ -671,6 +685,10 @@ function alignSlots(root){if(!root)return;const sl=[...root.querySelectorAll('.s
 /* ================= ESTAT ================= */
 const DEF={t:['be','hg','can','ps','pc','bep','pas'],contr:true,time:true,align:true,slow:false,auto:false,ph:'cat',irr:'0',ex:['build','gap','sa','irr']};
 let O=load('guaitaAngles.opts',DEF),ST=load('guaitaAngles.stats',{stars:0,t:{}});
+if(!/^[sml]$/.test(O.size))O.size='m';
+const ZM={s:.8,m:.9,l:1};
+function setSize(z){O.size=z;save();document.documentElement.style.zoom=ZM[z];const o=$('#oSize');if(o)o.value=z;const b=$('#szBtn');if(b)b.textContent='Aa·'+z.toUpperCase();if(typeof route==='function'&&window.__booted)route()}
+['gesturestart','gesturechange'].forEach(ev=>document.addEventListener(ev,e=>e.preventDefault()));
 O={...DEF,...O};
 function load(k,d){try{const v=JSON.parse(localStorage.getItem(k));return v||structuredClone(d)}catch(e){return structuredClone(d)}}
 function save(){try{localStorage.setItem('guaitaAngles.opts',JSON.stringify(O));localStorage.setItem('guaitaAngles.stats',JSON.stringify(ST))}catch(e){}}
@@ -691,10 +709,28 @@ function say(txt,cb){
  try{const s=speechSynthesis;if(!cb){stopRead(true);s.cancel()}const u=new SpeechSynthesisUtterance(txt);u.lang='en-GB';
   const vs=s.getVoices();const vo=vs.find(x=>/en[-_]GB/i.test(x.lang))||vs.find(x=>/^en/i.test(x.lang));if(vo)u.voice=vo;
   u.rate=O.slow?.7:.95;if(cb){u.onend=cb;u.onerror=()=>stopRead()}s.speak(u)}catch(e){toast('No s\'ha pogut reproduir la veu.')}}
-let RQ=null;
-function stopRead(silent){if(!RQ)return;const r=RQ;RQ=null;r.btn.textContent='Llegeix-ho tot';document.querySelectorAll('.reading').forEach(e=>e.classList.remove('reading'));if(!silent)try{speechSynthesis.cancel()}catch(e){}}
-function readAll(box,btn){if(RQ){stopRead();return}if(!HAS_TTS){toast('Aquest navegador no té veu.');return}const items=[...box.querySelectorAll('[data-rs]')];if(!items.length)return;try{speechSynthesis.cancel()}catch(e){}RQ={items,i:0,btn};btn.textContent='Atura la lectura';step()}
-function step(){if(!RQ)return;document.querySelectorAll('.reading').forEach(e=>e.classList.remove('reading'));if(RQ.i>=RQ.items.length){stopRead(true);return}const el=RQ.items[RQ.i++];el.classList.add('reading');if(el.scrollIntoView)el.scrollIntoView({block:'nearest',behavior:RM?'auto':'smooth'});say(el.dataset.rs,step)}
+let RQ=null,RSEL=null,RTAP=null,RTOK=0,RF=true;
+const RBOX='#verbList,#conjList,#tbl',rItems=box=>[...box.querySelectorAll('[data-rs]')];
+function speakRaw(txt,cb){try{const s=speechSynthesis,u=new SpeechSynthesisUtterance(txt);u.lang='en-GB';const vs=s.getVoices(),vo=vs.find(x=>/en[-_]GB/i.test(x.lang))||vs.find(x=>/^en/i.test(x.lang));if(vo)u.voice=vo;u.rate=O.slow?.7:.95;u.onend=cb;u.onerror=e=>{if(e&&e.error&&!/interrupted|canceled/.test(e.error))cb()};s.speak(u)}catch(e){toast('No s\'ha pogut reproduir la veu.')}}
+function rUI(){const bar=$('#rbar'),box=(RQ&&RQ.box)||(RSEL&&RSEL.box)||(RTAP&&RTAP.closest(RBOX));const show=!!(RQ||RSEL||RTAP)&&box&&box.isConnected&&box.offsetParent!==null;bar.hidden=!show;if(!show)return;
+ bar.querySelectorAll('[data-rc=prev],[data-rc=pause],[data-rc=next],[data-rc=stop]').forEach(b=>b.hidden=!RQ);
+ const p=bar.querySelector('[data-rc=pause]');p.textContent=RQ&&RQ.paused?'▶ Continua':'⏸ Pausa';bar.querySelector('[data-rc=follow]').setAttribute('aria-pressed',RF)}
+function stopRead(silent){RTOK++;if(RQ){if(RQ.btn)RQ.btn.textContent='Llegeix-ho tot';RQ=null}document.querySelectorAll('.reading').forEach(e=>e.classList.remove('reading'));if(!silent)try{speechSynthesis.cancel()}catch(e){}rUI()}
+function startRead(box,btn,idx){if(!HAS_TTS){toast('Aquest navegador no té veu.');return}const items=rItems(box);if(!items.length)return;try{speechSynthesis.cancel()}catch(e){}stopRead(true);RQ={items,i:Math.max(0,idx||0),btn,box,paused:false};if(btn)btn.textContent='Atura la lectura';step()}
+function readAll(box,btn){if(RQ){stopRead();return}startRead(box,btn,0)}
+function step(){if(!RQ)return;document.querySelectorAll('.reading').forEach(e=>e.classList.remove('reading'));if(RQ.i>=RQ.items.length){stopRead(true);return}const el=RQ.items[RQ.i];el.classList.add('reading');if(RF&&el.scrollIntoView)el.scrollIntoView({block:'center',behavior:RM?'auto':'smooth'});const tok=++RTOK;rUI();speakRaw(el.dataset.rs,()=>{if(tok===RTOK&&RQ&&!RQ.paused){RQ.i++;step()}})}
+function rCtl(a){
+ if(a==='x'){RSEL=null;RTAP=null;if(RQ)stopRead();rUI();return}
+ if(a==='follow'){RF=!RF;rUI();if(RQ&&RF)step();return}
+ if(a==='stop'){stopRead();RSEL=null;RTAP=null;rUI();return}
+ if(a==='pause'&&RQ){if(RQ.paused){RQ.paused=false;step()}else{RQ.paused=true;RTOK++;try{speechSynthesis.cancel()}catch(e){}rUI()}return}
+ if((a==='prev'||a==='next')&&RQ){RQ.i=Math.max(0,Math.min(RQ.items.length-1,RQ.i+(a==='next'?1:-1)));try{speechSynthesis.cancel()}catch(e){}step();return}
+ if(a==='sel'){if(!RSEL||!RSEL.text){toast('Selecciona primer un text.');return}stopRead(true);try{speechSynthesis.cancel()}catch(e){}RTOK++;speakRaw(RSEL.text,()=>{});return}
+ if(a==='from'){let box,idx=-1;if(RSEL){box=RSEL.box;idx=rItems(box).findIndex(el=>{try{return RSEL.range.intersectsNode(el)}catch(e){return false}})}
+  else if(RTAP){box=RTAP.closest(RBOX);idx=rItems(box).indexOf(RTAP)}
+  if(!box||idx<0){toast('Selecciona un text o toca un verb per triar l\'inici.');return}
+  startRead(box,null,idx)}}
+document.addEventListener('selectionchange',()=>{const g=getSelection();if(!g||g.isCollapsed||!g.rangeCount)return;const r=g.getRangeAt(0);let n=r.commonAncestorContainer;n=n.nodeType===1?n:n.parentElement;const box=n&&n.closest&&n.closest(RBOX);if(!box)return;const fr=r.cloneContents();fr.querySelectorAll('.ph,.ca,.warn,.note').forEach(x=>x.remove());fr.querySelectorAll('td,th,button,tr').forEach(x=>x.append(', '));RSEL={text:fr.textContent.replace(/\s+/g,' ').replace(/(,\s*)+/g,', ').replace(/^,\s*|,\s*$/g,'').trim(),range:r.cloneRange(),box};rUI()});
 function ph(ipa){if(!ipa||O.ph==='none')return'';const c=catPh(ipa),i='/'+ipa+'/';return '<span class="ph">'+esc(O.ph==='ipa'?i:O.ph==='both'?c+'   '+i:c)+'</span>'}
 function syncSw(){document.querySelectorAll('[data-align]').forEach(b=>{b.setAttribute('aria-pressed',O.align);const sp=b.querySelectorAll('span');sp[0].className=O.align?'':'on';sp[1].className=O.align?'on':''});document.querySelectorAll('[data-time]').forEach(b=>{b.setAttribute('aria-pressed',O.time);const sp=b.querySelectorAll('span');sp[0].className=O.time?'':'on';sp[1].className=O.time?'on':''});document.querySelectorAll('[data-contr]').forEach(b=>{b.setAttribute('aria-pressed',O.contr);const sp=b.querySelectorAll('span');sp[0].className=O.contr?'':'on';sp[1].className=O.contr?'on':''})}
 const SWH='<button class="sw" data-contr aria-label="Formes llargues o curtes"><em>Formes</em><span>do not</span><span>don\'t</span></button>';
@@ -838,7 +874,7 @@ function statsHTML(){
  return rows.map(([n,r])=>{const pc=r&&r.n?Math.round(100*r.ok/r.n):0;return '<div class="statrow"><span>'+esc(n)+'</span><div class="meter"><i style="width:'+pc+'%"></i></div><span class="muted" style="width:4.5em;text-align:right;white-space:nowrap">'+(r&&r.n?pc+'%':'—')+'</span></div>'}).join('')}
 
 /* ================= VERBS I TRUCS ================= */
-let VT='irr',VS='pat',VQ='';
+let VT='irr',VS='fr',VG='pat',VQ='';
 const sb=w=>w.split('/').map(x=>'<button data-say="'+esc(x)+'">'+esc(x)+'</button>').join('/');
 function irrRows(L){return L.map(v=>{const f=v.b+', '+v.p.replace('/',' or ')+', '+v.pp.replace('/',' or ');
  const same=(v.b===v.p&&v.ib!==v.ip)||(v.p===v.pp&&v.ip!==v.ipp)||(v.b===v.pp&&v.ib!==v.ipp);
@@ -849,6 +885,7 @@ const TH='<thead><tr><th>Infinitiu</th><th>Passat</th><th>Participi</th></tr></t
 function renderVerbs(){
  document.querySelectorAll('#verbTabs .chip').forEach(b=>b.setAttribute('aria-pressed',b.dataset.vt===VT));
  document.querySelectorAll('#sortChips .chip').forEach(b=>b.setAttribute('aria-pressed',b.dataset.sort===VS));
+ document.querySelectorAll('#grpChips .chip').forEach(b=>b.setAttribute('aria-pressed',b.dataset.grp===VG));
  $('#irrCtl').hidden=VT!=='irr';
  if(VT==='irr'){const lv=irrCap();let L=IRRL.filter(v=>v.lvl<=lv&&(!VQ||(v.b+' '+v.p+' '+v.pp+' '+v.ca).toLowerCase().includes(VQ)));
   const fails=v=>{const r=ST.v&&ST.v[v.b];return r?r.n-r.ok:0};
@@ -856,7 +893,7 @@ function renderVerbs(){
   if(VS==='ko')L.sort((a,b)=>fails(b)-fails(a)||a.i-b.i);
   const head='<p class="muted">'+L.length+' verbs · '+(lv===3?'llista completa':'llista de nivell '+lv)+'. Toca una forma per escoltar-la; mantén premut CA per veure el significat.</p>';
   if(!L.length){$('#verbList').innerHTML='<p>Cap verb coincideix amb «'+esc(VQ)+'». Prova amb una altra paraula.</p>';return}
-  if(VS==='pat')$('#verbList').innerHTML=head+'<div class="groups">'+['AAA','ABB','ABA','IAU','ABC'].map(g=>{const G=L.filter(v=>grp(v)===g);if(!G.length)return'';return '<div class="card"><h3>'+esc(GROUPS[g].n)+'</h3><p class="muted">'+esc(GROUPS[g].m)+'</p><table class="vt">'+TH+'<tbody>'+irrRows(G)+'</tbody></table></div>'}).join('')+'</div>';
+  if(VG==='pat')$('#verbList').innerHTML=head+'<div class="groups">'+['AAA','ABB','ABA','IAU','ABC'].map(g=>{const G=L.filter(v=>grp(v)===g);if(!G.length)return'';return '<div class="card"><h3>'+esc(GROUPS[g].n)+'</h3><p class="muted">'+esc(GROUPS[g].m)+'</p><table class="vt">'+TH+'<tbody>'+irrRows(G)+'</tbody></table></div>'}).join('')+'</div>';
   else $('#verbList').innerHTML=head+'<div class="card"><table class="vt">'+TH+'<tbody>'+irrRows(L)+'</tbody></table></div>'}
  else $('#verbList').innerHTML='<div class="card"><h3>Regulars: només cal afegir -ed</h3><p class="muted">El color et diu com sona la -ed: <span class="ed ed-t">/t/</span> <span class="ed ed-d">/d/</span> <span class="ed ed-id">/ɪd/</span></p><table class="vt"><thead><tr><th>Infinitiu</th><th>Passat i participi</th><th>So</th></tr></thead><tbody>'+REG.map(v=>'<tr data-rs="'+esc(v.b+', '+pastF(v))+'"><td>'+sb(v.b)+'<div class="ca">'+esc(v.ca)+'</div></td><td>'+sb(pastF(v))+'</td><td><span class="ed ed-'+v.ed+'">/'+(v.ed==='id'?'ɪd':v.ed)+'/</span></td></tr>').join('')+'</tbody></table></div>'}
 let CJ='go';
@@ -875,10 +912,11 @@ function renderConj(){
   return '<div class="card cjcard"><h3>'+esc(T.n)+' <span class="muted">· '+esc(T.ca)+'</span></h3><table class="cj"><thead><tr><th>Positive</th><th>Negative</th><th>Question</th><th>Short answer</th><th></th></tr></thead><tbody>'+rows+'</tbody></table></div>'}).join('');
  $('#conjList').querySelectorAll('.cj').forEach(alignSlots);syncSw()}
 function renderTips(){
- const ex=(arr)=>'<div class="ex">'+arr.map(([a,b])=>'<button data-say="'+esc(b)+'">'+esc(a)+' → <b>'+esc(b)+'</b></button>').join('')+'</div>';
+ const caW=w=>{if(/\s/.test(w))return'';const i=IRRL.find(x=>x.b===w);return CAV[w]||(i&&i.ca)||''};
+ const ex=(arr)=>'<div class="ex">'+arr.map(([a,b])=>'<button data-say="'+esc(b)+'"><span>'+esc(a)+' → <b>'+esc(b)+'</b></span><span class="ca">'+esc(caW(a))+'</span></button>').join('')+'</div>';
  const sv=b=>({b});
  const L=(t,r)=>'<span class="bk"><span class="sg r-'+r+'">'+t+'</span></span>';
- const st=(T,sub,v,c,f)=>'<div class="sm">'+blocks(contract(gen(TB[T],sub,v,c,f),f,false))+'</div>';
+ const st=(T,sub,v,c,f)=>{let t='';try{t=tr(TB[T],sub,v,c,f)}catch(e){}return '<div class="sm">'+blocks(contract(gen(TB[T],sub,v,c,f),f,false))+'<div class="ca">'+esc(t)+'</div></div>'};
  const play=V.find(v=>v.b==='play');
  $('#tips').innerHTML=[
   '<div class="card"><h3>El codi de colors</h3><p>Cada peça té sempre el mateix color. Fixa\'t on va cada color i entendràs qualsevol frase.</p><div class="legend">'+L('subjecte','s')+L('auxiliar','a')+L('not','n')+L('verb','v')+L('la resta','c')+'</div></div>',
@@ -895,12 +933,12 @@ function renderOpts(){
  let h='';[1,2,3].forEach(l=>{h+='<div class="lvl">Nivell '+l+'</div>'+TENSES.filter(t=>t.lvl===l).map(t=>'<label><input type="checkbox" data-ot="'+t.id+'"'+(O.t.includes(t.id)?' checked':'')+'> '+esc(t.n)+' <span class="muted">· '+esc(t.ca)+'</span></label>').join('')});
  $('#tenseOpts').innerHTML=h;
  $('#exOpts').innerHTML=Object.entries(EXT).map(([k,n])=>'<label><input type="checkbox" data-oe="'+k+'"'+(O.ex.includes(k)?' checked':'')+'> '+n+'</label>').join('');
- $('#oAuto').checked=O.auto;$('#oSlow').checked=O.slow;$('#oPh').value=O.ph;$('#oIrr').value=O.irr;$('#stats').innerHTML=statsHTML()}
+ $('#oAuto').checked=O.auto;$('#oSlow').checked=O.slow;$('#oSize').value=O.size;$('#oPh').value=O.ph;$('#oIrr').value=O.irr;$('#stats').innerHTML=statsHTML()}
 
 /* ================= NAVEGACIÓ I ESDEVENIMENTS ================= */
 const VIEWS=['frases','conjuga','exercicis','verbs','trucs','opcions'];
 const curV=()=>VIEWS.includes(location.hash.slice(1))?location.hash.slice(1):'frases';
-function route(){const v=curV();stopRead();
+function route(){const v=curV();RSEL=null;RTAP=null;stopRead();
  VIEWS.forEach(x=>$('#v-'+x).hidden=x!==v);
  document.querySelectorAll('nav a').forEach(a=>a.dataset.v===v?a.setAttribute('aria-current','page'):a.removeAttribute('aria-current'));
  if(v==='frases')renderFrases();if(v==='conjuga')renderConj();if(v==='exercicis')renderEx();if(v==='verbs')renderVerbs();if(v==='trucs')renderTips();if(v==='opcions')renderOpts();
@@ -908,12 +946,14 @@ function route(){const v=curV();stopRead();
 addEventListener('hashchange',route);
 document.addEventListener('click',e=>{
  const t=e.target.closest('button,a');if(!t)return;
- if(t.dataset.say){say(t.dataset.say);return}
+ if(t.dataset.say){const rw=t.closest('[data-rs]');if(rw&&rw.closest(RBOX)){RTAP=rw;RSEL=null;rUI()}say(t.dataset.say);return}
+ if(t.dataset.rc){rCtl(t.dataset.rc);return}
  if(t.dataset.align!==undefined){O.align=!O.align;save();if(curV()==='conjuga')renderConj();else renderFrases();return}
  if(t.dataset.contr!==undefined){O.contr=!O.contr;save();const v=curV();if(v==='frases')renderFrases();else if(v==='conjuga')renderConj();else if(v==='exercicis'){if(EX&&EX.q&&EX.i<10)EX.q=makeQ(EX.only,EX.q.seed);renderEx()}syncSw();return}
  if(t.dataset.time!==undefined){O.time=!O.time;save();renderFrases();return}
  if(t.dataset.readall){readAll($({tbl:'#tbl',conj:'#conjList',verbs:'#verbList'}[t.dataset.readall]),t);return}
  if(t.dataset.sort){VS=t.dataset.sort;renderVerbs();return}
+ if(t.dataset.grp){VG=t.dataset.grp;renderVerbs();return}
  if(t.dataset.t){B.t=t.dataset.t;renderFrases();autoStage();return}
  if(t.dataset.pi){B.pi=+t.dataset.pi;renderFrases();autoStage();return}
  if(t.dataset.f){B.f=t.dataset.f;renderChips();renderStage();renderTable();renderMn();autoStage();return}
@@ -944,7 +984,9 @@ document.addEventListener('change',e=>{
  if(t.id==='oIrr'){O.irr=t.value;save();return}
  if(t.id==='conjVerb'){CJ=t.value;renderConj();return}
  if(t.id==='oSlow'){O.slow=t.checked;save();return}
+ if(t.id==='oSize'){setSize(t.value);return}
 });
+document.getElementById('rbar').addEventListener('pointerdown',e=>{if(e.target.closest('button'))e.preventDefault()});
 document.addEventListener('keydown',e=>{if($('#v-frases').hidden||e.target.matches('select,input'))return;
  const fs=['pos','neg','q','sa'];if(e.key==='ArrowRight'||e.key==='ArrowLeft'){B.f=fs[(fs.indexOf(B.f)+(e.key==='ArrowRight'?1:3))%4];renderChips();renderStage();renderTable();renderMn()}});
 document.querySelectorAll('[data-icon]').forEach(b=>b.insertAdjacentHTML('afterbegin',SPK));
@@ -954,6 +996,7 @@ document.addEventListener('input',e=>{if(e.target.id==='vSearch'){VQ=e.target.va
 {const cb=$('#caBtn'),on=e=>{e.preventDefault();document.body.classList.add('tr')},off=()=>document.body.classList.remove('tr');
  cb.addEventListener('pointerdown',on);['pointerup','pointercancel','blur'].forEach(ev=>addEventListener(ev,off));
  cb.addEventListener('contextmenu',e=>e.preventDefault());cb.addEventListener('keydown',e=>{if(e.key===' '||e.key==='Enter')on(e)});cb.addEventListener('keyup',off)}
+setSize(O.size);window.__booted=1;
 if(HAS_TTS)try{speechSynthesis.getVoices();speechSynthesis.onvoiceschanged=()=>{}}catch(e){}
 route();
 /* ===== PWA, instal·lació i ajuda ===== */
@@ -981,12 +1024,13 @@ function appHelp(){
  sheet('Com es fa servir',`<h3>Frases</h3><ul><li>Tria el <b>temps verbal</b> a dalt i la <b>forma</b>: Positive, Negative, Question o Short answer.</li><li>Cada color és una peça: blau subjecte, taronja auxiliar, vermell <i>not</i>, verd verb, lila la resta.</li><li>«Una altra frase» canvia la persona i el verb; «Escolta» la llegeix en veu alta.</li><li><b>Formes</b>: canvia entre <i>do not</i> i <i>don't</i>. <b>Paraules de temps</b>: mostra o amaga <i>every day</i>, <i>yesterday</i>…</li><li>To be, Have got i To be (past) són «verbs especials»: van sols, no fan servir el verb triat.</li></ul>
  <h3>Conjuga</h3><ul><li>Tria un verb i veuràs totes les persones de cada temps. «Llegeix-ho tot» el llegeix fila a fila.</li><li><b>Alinea</b> (Frase | Verb): amb «Verb» el pronom queda en una columna fixa i el verb comença sempre al mateix lloc. També és a la taula de Frases.</li></ul>
  <h3>Exercicis</h3><ul><li>Rondes de 10 preguntes. Cada encert val una estrella ★.</li><li>Pots triar els tipus d'exercici a Opcions.</li></ul>
- <h3>Verbs</h3><ul><li>Irregulars ordenats per patró, A–Z, més freqüents o els que fallo més. Hi ha cercador.</li><li>Toca una forma per escoltar-la. Un avís vermell indica que s'escriu igual però sona diferent.</li></ul>
+ <h3>Verbs</h3><ul><li>Irregulars: agrupa per patró o no, i ordena per més freqüents, A–Z o els que fallo més. El cercador entén anglès i català.</li><li>Lectura: selecciona un text o toca un verb i prem «Des d'aquí»; també pots pausar, saltar i aturar.</li><li>Toca una forma per escoltar-la. Un avís vermell indica que s'escriu igual però sona diferent.</li></ul>
  <h3>Botó CA</h3><ul><li>Mantén-lo <b>premut</b> per veure la traducció literal en català. En deixar-lo, s'amaga.</li></ul>
  <h3>Opcions</h3><ul><li>Activa els temps verbals que ja treballeu (nivells 1, 2 i 3), la fonètica, la veu lenta i la lectura automàtica.</li></ul>
  <div class="stagebar"><a class="btn alt" href="HLP%20guaitaAngles-ajuda.html" target="_blank" rel="noopener" style="text-decoration:none">Ajuda completa</a></div>`)}
 document.addEventListener('click',e=>{const t=e.target.closest('button');if(!t)return;
  if(t.id==='instBtn'||t.id==='instBtn2'){installHelp();return}
+ if(t.id==='szBtn'){setSize({s:'m',m:'l',l:'s'}[O.size]);return}
  if(t.id==='helpBtn'||t.id==='helpBtn2'){appHelp();return}
  if(t.id==='shClose'){closeSheet();return}
  if(e.target.id==='ov')closeSheet()},true);
