@@ -12,7 +12,7 @@
 <link rel="icon" type="image/svg+xml" href="../icones/favicon.svg">
 <title>guaitaAngles</title>
 <!--
-  guaitaAngles v0.4.1 — Verbs en anglès, peça a peça (formes verbals per a nens i nenes de 12 anys)
+  guaitaAngles v0.5 — Verbs en anglès, peça a peça (formes verbals per a nens i nenes de 12 anys)
   Suite Guaita Apps
   Copyright (C) 2026 SBS BiM Consulting, Jordi Subirós
   SPDX-License-Identifier: AGPL-3.0-only
@@ -53,7 +53,7 @@ p{margin:0 0 10px}
 .md .line{font-size:clamp(22px,3.2vw,30px);gap:8px}.md .bk{border-radius:11px}
 header{display:flex;align-items:center;gap:12px;padding:calc(10px + env(safe-area-inset-top)) max(4vw,16px) 10px;max-width:1100px;margin:0 auto}
 header h1{font-size:22px;font-weight:800;letter-spacing:-.01em}
-header .sub{color:var(--mut);font-size:14px}
+header .ver{font-size:11px;font-weight:700;color:var(--mut);letter-spacing:.02em;vertical-align:baseline}header .sub{color:var(--mut);font-size:14px}
 .stars{margin-left:auto;font-weight:800;font-size:18px;background:var(--card);border-radius:999px;padding:6px 14px;white-space:nowrap}
 .stars b{color:#e0a100}
 /* stage */
@@ -194,7 +194,7 @@ body.tr .cabtn{transform:scale(1.12);background:var(--cs)}
 .alr{display:flex;gap:.5em;align-items:baseline}.alr .slot{flex:none;white-space:nowrap}.alr .rest{flex:1 1 0}
 .hbtn{flex:none;min-height:44px;min-width:44px;border-radius:999px;border:2px solid var(--line);background:var(--card);font-weight:800;font-size:16px;padding:6px 14px}
 header .stars{margin-left:0}header .sp{flex:1}
-@media(max-width:560px){header .sub{display:none}header{gap:8px}#instBtn{display:none}}
+@media(max-width:560px){header .ver{font-size:11px;font-weight:700;color:var(--mut);letter-spacing:.02em;vertical-align:baseline}header .sub{display:none}header{gap:8px}#instBtn{display:none}}
 .ov{position:fixed;inset:0;background:rgba(10,9,30,.6);z-index:20;display:flex;align-items:flex-end;justify-content:center;padding:0}
 .ov .sheet{background:var(--bg);color:var(--ink);width:min(720px,100%);max-height:88vh;overflow:auto;border-radius:24px 24px 0 0;padding:20px max(20px,env(safe-area-inset-left)) calc(24px + env(safe-area-inset-bottom));box-shadow:0 -10px 40px rgba(0,0,0,.35)}
 @media(min-width:760px){.ov{align-items:center}.ov .sheet{border-radius:24px}}
@@ -208,7 +208,7 @@ header .stars{margin-left:0}header .sp{flex:1}
 <body>
 <header>
   <svg width="40" height="40" viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="3" width="12" height="12" rx="3" fill="#2563eb"/><rect x="17" y="3" width="12" height="12" rx="3" fill="#ea580c"/><rect x="3" y="17" width="12" height="12" rx="3" fill="#e11d48"/><rect x="17" y="17" width="12" height="12" rx="3" fill="#059669"/></svg>
-  <div><h1>guaitaAngles</h1><div class="sub">Verbs en anglès, peça a peça</div></div>
+  <div><h1>guaitaAngles <small class="ver">v0.5</small></h1><div class="sub">Verbs en anglès, peça a peça</div></div>
   <span class="sp"></span>
   <button class="hbtn" id="instBtn" hidden>Instal·la</button>
   <button class="hbtn" id="szBtn" aria-label="Mida del text i dels botons">Aa</button>
@@ -326,7 +326,7 @@ header .stars{margin-left:0}header .sp{flex:1}
       </div>
       <div class="card muted">
         <h3 style="color:var(--ink)">Quant a</h3>
-        <p>guaitaAngles v0.4.1 · Suite Guaita Apps<br>© 2026 SBS BiM Consulting, Jordi Subirós<br>Llicència AGPL-3.0-only · <a href="https://github.com/subi2/guaitaAngles" target="_blank" rel="noopener" style="color:inherit">Codi font</a></p>
+        <p>guaitaAngles v0.5 · Suite Guaita Apps<br>© 2026 SBS BiM Consulting, Jordi Subirós<br>Llicència AGPL-3.0-only · <a href="https://github.com/subi2/guaitaAngles" target="_blank" rel="noopener" style="color:inherit">Codi font</a></p>
         <p>Anglès britànic (have got). La veu és la del mateix dispositiu i no s'envia res a cap servidor. El progrés es desa només en aquest navegador.</p>
       </div>
     </div>
