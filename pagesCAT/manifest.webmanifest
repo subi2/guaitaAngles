@@ -1,0 +1,16 @@
+{
+  "name": "guaitaAngles",
+  "short_name": "guaitaAngles",
+  "description": "Verbs en anglès, peça a peça: formes, conjugacions i exercicis.",
+  "lang": "ca",
+  "start_url": "./guaitaAngles_0.3.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#1d1b3a",
+  "theme_color": "#1d1b3a",
+  "icons": [
+    {"src": "../icones/icona-192.png", "sizes": "192x192", "type": "image/png"},
+    {"src": "../icones/icona-512.png", "sizes": "512x512", "type": "image/png"},
+    {"src": "../icones/icona-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ]
+}
