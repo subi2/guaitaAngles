@@ -9,8 +9,27 @@
   "background_color": "#1d1b3a",
   "theme_color": "#1d1b3a",
   "icons": [
-    {"src": "../icones/icona-192.png", "sizes": "192x192", "type": "image/png"},
-    {"src": "../icones/icona-512.png", "sizes": "512x512", "type": "image/png"},
-    {"src": "../icones/icona-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+    {
+      "src": "../icones/icona-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "../icones/icona-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "../icones/icona-512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "related_applications": [
+    {
+      "platform": "webapp",
+      "url": "https://subi2.github.io/guaitaAngles/pagesCAT/manifest.webmanifest"
+    }
   ]
 }

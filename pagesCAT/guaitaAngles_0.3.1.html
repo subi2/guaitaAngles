@@ -963,11 +963,15 @@ const IOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='M
 let DEFER=null;
 if(SECURE&&'serviceWorker' in navigator)addEventListener('load',()=>{try{navigator.serviceWorker.register('sw.js').catch(()=>{})}catch(e){}});
 addEventListener('beforeinstallprompt',e=>{e.preventDefault();DEFER=e;instUI()});
-addEventListener('appinstalled',()=>{DEFER=null;instUI();toast('App instal·lada!')});
+let INST=false;try{INST=localStorage.getItem('ga_inst')==='1'}catch(e){}
+function setInst(){INST=true;try{localStorage.setItem('ga_inst','1')}catch(e){}}
+if(STANDALONE)setInst();
+else if(navigator.getInstalledRelatedApps)navigator.getInstalledRelatedApps().then(l=>{if(l&&l.length){setInst();instUI()}}).catch(()=>{});
+addEventListener('appinstalled',()=>{DEFER=null;setInst();instUI();toast('App instal·lada!')});
 function instUI(){const b=$('#instBtn'),st=$('#instState');
- b.hidden=!SECURE||STANDALONE;
- st.textContent=STANDALONE?'Ja la fas servir com a app instal·lada.':!SECURE?'Per instal·lar-la, obre-la des de la seva adreça web (https).':DEFER?'Aquest navegador la pot instal·lar amb un sol toc.':IOS?'A l\'iPad s\'instal·la des de Safari, amb el botó Comparteix.':'Pots afegir-la a la pantalla d\'inici des del menú del navegador.';
- $('#instBtn2').hidden=STANDALONE||!SECURE}
+ b.hidden=!SECURE||STANDALONE||INST;
+ st.textContent=(STANDALONE||INST)?'Ja la tens instal·lada.':!SECURE?'Per instal·lar-la, obre-la des de la seva adreça web (https).':DEFER?'Aquest navegador la pot instal·lar amb un sol toc.':IOS?'A l\'iPad s\'instal·la des de Safari, amb el botó Comparteix.':'Pots afegir-la a la pantalla d\'inici des del menú del navegador.';
+ $('#instBtn2').hidden=STANDALONE||INST||!SECURE}
 function sheet(t,h){const sh=$('#sheet');sh.innerHTML='<h2 id="shTitle">'+t+'</h2>'+h+'<div class="stagebar"><button class="btn" id="shClose">Tanca</button></div>';$('#ov').hidden=false;sh.focus()}
 function closeSheet(){$('#ov').hidden=true}
 function installHelp(){
