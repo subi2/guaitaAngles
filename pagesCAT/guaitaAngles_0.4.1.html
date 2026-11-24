@@ -12,7 +12,7 @@
 <link rel="icon" type="image/svg+xml" href="../icones/favicon.svg">
 <title>guaitaAngles</title>
 <!--
-  guaitaAngles v0.4 — Verbs en anglès, peça a peça (formes verbals per a nens i nenes de 12 anys)
+  guaitaAngles v0.4.1 — Verbs en anglès, peça a peça (formes verbals per a nens i nenes de 12 anys)
   Suite Guaita Apps
   Copyright (C) 2026 SBS BiM Consulting, Jordi Subirós
   SPDX-License-Identifier: AGPL-3.0-only
@@ -234,6 +234,7 @@ header .stars{margin-left:0}header .sp{flex:1}
       <button class="btn alt" id="rndStage">Una altra frase</button>
       <button class="sw" data-time aria-label="Mostra o amaga les paraules de temps"><em>Paraules de temps</em><span>no</span><span>sí</span></button>
       <button class="sw" data-contr aria-label="Formes llargues o curtes"><em>Formes</em><span>do not</span><span>don't</span></button>
+      <button class="sw" data-nq id="nqSw" aria-label="Pregunta normal o negativa" hidden><em>Pregunta</em><span>Normal</span><span>Negativa</span></button>
     </div>
   </div></div>
   <div class="band"><div class="wrap">
@@ -303,6 +304,7 @@ header .stars{margin-left:0}header .sp{flex:1}
         <h3>Com es mostra</h3>
         <label><input type="checkbox" id="oAuto"> Llegeix automàticament cada frase nova</label>
         <label>Mida de la pantalla <select id="oSize"><option value="s">S · petita</option><option value="m">M · mitjana</option><option value="l">L · gran</option></select></label>
+        <label><input type="checkbox" id="oNq"> Negative question (Don't you play?) a Conjuga i als exercicis</label>
         <label><input type="checkbox" id="oSlow"> Veu lenta</label>
         <label>Fonètica <select id="oPh"><option value="cat">A la catalana</option><option value="ipa">IPA</option><option value="both">Totes dues</option><option value="none">Cap</option></select></label>
         <label>Verbs irregulars <select id="oIrr"><option value="0">Segons els nivells actius</option><option value="1">Llista nivell 1</option><option value="2">Llista nivell 2</option><option value="3">Llista completa</option></select></label>
@@ -324,7 +326,7 @@ header .stars{margin-left:0}header .sp{flex:1}
       </div>
       <div class="card muted">
         <h3 style="color:var(--ink)">Quant a</h3>
-        <p>guaitaAngles v0.4 · Suite Guaita Apps<br>© 2026 SBS BiM Consulting, Jordi Subirós<br>Llicència AGPL-3.0-only · <a href="https://github.com/subi2/guaitaAngles" target="_blank" rel="noopener" style="color:inherit">Codi font</a></p>
+        <p>guaitaAngles v0.4.1 · Suite Guaita Apps<br>© 2026 SBS BiM Consulting, Jordi Subirós<br>Llicència AGPL-3.0-only · <a href="https://github.com/subi2/guaitaAngles" target="_blank" rel="noopener" style="color:inherit">Codi font</a></p>
         <p>Anglès britànic (have got). La veu és la del mateix dispositiu i no s'envia res a cap servidor. El progrés es desa només en aquest navegador.</p>
       </div>
     </div>
@@ -636,12 +638,12 @@ function gen(T,sub,v,c,form,yes,auxOver,noT){
   out.push({t:'.',r:'p',k:'end'});return out}
  const S={t:sub.t,r:'s',k:'s'};
  const main=(form==='pos'?T.pos(v,p):T.main(v,p)).map((t,i)=>({t,r:T.mr?T.mr[i]:'v',k:'v'+i}));
- if(form==='q')out.push({t:a,r:'a',k:'a'},S);
+ if(form==='q'||form==='nq'){out.push({t:a,r:'a',k:'a'},S);if(form==='nq')out.push({t:'not',r:'n',k:'n'})}
  else{out.push(S);if(form==='neg'||T.posAux)out.push({t:a,r:'a',k:'a'});if(form==='neg')out.push({t:'not',r:'n',k:'n'})}
  out.push(...main);
  if(c)out.push({t:c,r:'c',k:'c'});
  if(T.time&&!noT)out.push({t:T.time,r:'t',k:'t'});
- out.push({t:form==='q'?'?':'.',r:'p',k:'end'});
+ out.push({t:form==='q'||form==='nq'?'?':'.',r:'p',k:'end'});
  return out}
 const NT={is:'is',are:'are',was:'was',were:'were',do:'do',does:'does',did:'did',have:'have',has:'has',can:'ca',will:'wo'};
 const PC={am:"'m",is:"'s",are:"'re",have:"'ve",has:"'s",will:"'ll"};
@@ -651,6 +653,7 @@ function contract(tk,form,on){
  tk=tk.map(o=>({...o}));
  const ai=tk.findIndex(o=>o.r==='a');if(ai<0)return tk;
  const A=tk[ai],nx=tk[ai+1];
+ if(form==='nq'){const ni=tk.findIndex(o=>o.r==='n');if(ni>ai){const N=tk[ni];if(A.t==='am')A.t='are';else if(NT[A.t])A.t=NT[A.t];else return tk;N.t="n't";N.j=1;tk.splice(ni,1);tk.splice(ai+1,0,N)}return tk}
  if(nx&&nx.r==='n'){
   if(A.t==='am'){A.t="'m";A.j=1}
   else if(NT[A.t]){A.t=NT[A.t];nx.t="n't";nx.j=1}
@@ -671,8 +674,8 @@ function tr(T,sub,v,c,form,yes,noT){
  else if(T.id==='hg'){vp=AUX.tenir[i];cm=HGC[c]??c}
  else{const K=catV(v.b);cm=C2[c]??c;
   vp={can:()=>AUX.poder[i]+' '+K.inf,ps:()=>K.pr[i],pc:()=>AUX.estar[i]+' '+K.ger,pas:()=>AUX.anar[i]+' '+K.inf,pac:()=>AUX.estarP[i]+' '+K.ger,will:()=>K.fut+FUTE[i],gt:()=>AUX.pensar[i]+' '+K.inf,pp:()=>AUX.haver[i]+' '+K.part}[T.id]()}
- const s=[SCA[sub.t]??SCA[sub.p],form==='neg'?'no':'',vp,cm,T.time&&!noT?TIMEC[T.time]:''].filter(Boolean).join(' ');
- return cap(s)+(form==='q'?'?':'.')}
+ const s=[SCA[sub.t]??SCA[sub.p],form==='neg'||form==='nq'?'no':'',vp,cm,T.time&&!noT?TIMEC[T.time]:''].filter(Boolean).join(' ');
+ return cap(s)+(form==='q'||form==='nq'?'?':'.')}
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function split3(tk){const g=groups(tk);let si=g.findIndex(x=>x.some(o=>o.r==='s'));if(si<0)si=0;return{pre:g.slice(0,si),sub:g[si],rest:g.slice(si+1)}}
 function bkHTML(g,gi,pre){return '<span class="bk" data-k="'+pre+g[0].k+'">'+g.map((o,i)=>{let t=o.t;if(gi===0&&i===0)t=cap(t);return '<span class="sg '+(o.blank?'blank':'r-'+o.r)+'">'+esc(o.blank?'____':t)+'</span>'}).join('')+'</span>'}
@@ -680,7 +683,7 @@ function blocks(tk,pre='',al){
  if(!al)return '<div class="line">'+groups(tk).map((x,i)=>bkHTML(x,i,pre)).join('')+'</div>';
  const S=split3(tk),n=S.pre.length;
  return '<div class="line al">'+(n?'<span class="slot" data-sl="'+al+'p">'+S.pre.map((x,i)=>bkHTML(x,i,pre)).join('')+'</span>':'')+'<span class="slot" data-sl="'+al+'s">'+bkHTML(S.sub,n,pre)+'</span><span class="rest">'+S.rest.map((x,i)=>bkHTML(x,n+1+i,pre)).join('')+'</span></div>'}
-function alignSlots(root){if(!root)return;const sl=[...root.querySelectorAll('.slot')],m={};sl.forEach(x=>x.style.minWidth='');sl.forEach(x=>{const k=x.dataset.sl,w=x.getBoundingClientRect().width;if(!(k in m)||w>m[k])m[k]=w});sl.forEach(x=>x.style.minWidth=m[x.dataset.sl]+'px')}
+function alignSlots(root){if(!root)return;const sl=[...root.querySelectorAll('.slot')],m={};sl.forEach(x=>x.style.minWidth='');sl.forEach(x=>{const k=x.dataset.sl,w=x.offsetWidth;if(!(k in m)||w>m[k])m[k]=w});sl.forEach(x=>x.style.minWidth=m[x.dataset.sl]+'px')}
 
 /* ================= ESTAT ================= */
 const DEF={t:['be','hg','can','ps','pc','bep','pas'],contr:true,time:true,align:true,slow:false,auto:false,ph:'cat',irr:'0',ex:['build','gap','sa','irr']};
@@ -732,7 +735,7 @@ function rCtl(a){
   startRead(box,null,idx)}}
 document.addEventListener('selectionchange',()=>{const g=getSelection();if(!g||g.isCollapsed||!g.rangeCount)return;const r=g.getRangeAt(0);let n=r.commonAncestorContainer;n=n.nodeType===1?n:n.parentElement;const box=n&&n.closest&&n.closest(RBOX);if(!box)return;const fr=r.cloneContents();fr.querySelectorAll('.ph,.ca,.warn,.note').forEach(x=>x.remove());fr.querySelectorAll('td,th,button,tr').forEach(x=>x.append(', '));RSEL={text:fr.textContent.replace(/\s+/g,' ').replace(/(,\s*)+/g,', ').replace(/^,\s*|,\s*$/g,'').trim(),range:r.cloneRange(),box};rUI()});
 function ph(ipa){if(!ipa||O.ph==='none')return'';const c=catPh(ipa),i='/'+ipa+'/';return '<span class="ph">'+esc(O.ph==='ipa'?i:O.ph==='both'?c+'   '+i:c)+'</span>'}
-function syncSw(){document.querySelectorAll('[data-align]').forEach(b=>{b.setAttribute('aria-pressed',O.align);const sp=b.querySelectorAll('span');sp[0].className=O.align?'':'on';sp[1].className=O.align?'on':''});document.querySelectorAll('[data-time]').forEach(b=>{b.setAttribute('aria-pressed',O.time);const sp=b.querySelectorAll('span');sp[0].className=O.time?'':'on';sp[1].className=O.time?'on':''});document.querySelectorAll('[data-contr]').forEach(b=>{b.setAttribute('aria-pressed',O.contr);const sp=b.querySelectorAll('span');sp[0].className=O.contr?'':'on';sp[1].className=O.contr?'on':''})}
+function syncSw(){document.querySelectorAll('[data-nq]').forEach(b=>{const on=B.f==='nq';b.setAttribute('aria-pressed',on);const sp=b.querySelectorAll('span');sp[0].className=on?'':'on';sp[1].className=on?'on':''});document.querySelectorAll('[data-align]').forEach(b=>{b.setAttribute('aria-pressed',O.align);const sp=b.querySelectorAll('span');sp[0].className=O.align?'':'on';sp[1].className=O.align?'on':''});document.querySelectorAll('[data-time]').forEach(b=>{b.setAttribute('aria-pressed',O.time);const sp=b.querySelectorAll('span');sp[0].className=O.time?'':'on';sp[1].className=O.time?'on':''});document.querySelectorAll('[data-contr]').forEach(b=>{b.setAttribute('aria-pressed',O.contr);const sp=b.querySelectorAll('span');sp[0].className=O.contr?'':'on';sp[1].className=O.contr?'on':''})}
 const SWH='<button class="sw" data-contr aria-label="Formes llargues o curtes"><em>Formes</em><span>do not</span><span>don\'t</span></button>';
 function irrCap(){return O.irr!=='0'?+O.irr:Math.max(1,...enabled().map(t=>t.lvl))}
 function autoStage(){if(O.auto)say(sentFor(curT(),P[B.pi],B.f).map(text).join(' '))}
@@ -749,7 +752,8 @@ function renderChips(){
  $('#tenseChips').innerHTML='<div class="tgrp">'+(vt.length?'<div><small>Temps del verb</small><div class="chips" role="group" aria-label="Temps del verb">'+ch(vt)+'</div></div>':'')+(sp.length?'<div><small>Verbs especials (van sols)</small><div class="chips" role="group" aria-label="Verbs especials">'+ch(sp)+'</div></div>':'')+'</div>';
  {const T=curT(),n=$('#stageNote'),vb=(V.find(x=>x.b===B.v)||V[0]).b;n.hidden=!T.cm;if(T.cm)n.textContent=(T.id==='hg'?'Have got no fa servir el verb «'+vb+'»: ell mateix és el verb (tenir).':esc(T.n)+' no fa servir el verb «'+vb+'»: va sol.')+' Torna a «Temps del verb» per recuperar la teva frase.'}
  $('#personChips').innerHTML=P.map((p,i)=>'<button class="chip" data-pi="'+i+'" aria-pressed="'+(i===B.pi)+'">'+p.t+'</button>').join('');
- document.querySelectorAll('#forms .fbtn').forEach(b=>b.setAttribute('aria-selected',b.dataset.f===B.f));
+ document.querySelectorAll('#forms .fbtn').forEach(b=>b.setAttribute('aria-selected',b.dataset.f===(B.f==='nq'?'q':B.f)));
+ $('#nqSw').hidden=!(B.f==='q'||B.f==='nq');
  const T=curT(),sel=$('#verbSel');
  if(T.cm){$('#verbLbl').firstChild.textContent='Complement ';sel.innerHTML=T.cm.map((c,i)=>'<option value="'+i+'"'+(i===B.c%T.cm.length?' selected':'')+'>'+esc(c)+'</option>').join('')}
  else{$('#verbLbl').firstChild.textContent='Verb ';
@@ -767,7 +771,7 @@ function renderStage(){
   const n=b.getBoundingClientRect(),dx=o.left-n.left,dy=o.top-n.top;
   if(Math.abs(dx)>1||Math.abs(dy)>1)b.animate([{transform:'translate('+dx+'px,'+dy+'px)'},{transform:'none'}],{duration:480,easing:'cubic-bezier(.3,1.35,.5,1)'})})}
 function renderTable(){
- const T=curT(),F={pos:'Positive',neg:'Negative',q:'Question',sa:'Short answer'}[B.f];
+ const T=curT(),F={pos:'Positive',neg:'Negative',q:'Question',nq:'Negative question',sa:'Short answer'}[B.f];
  $('#tblTitle').textContent=F+' — totes les persones';
  $('#tbl').innerHTML=P.map(p=>{const ls=sentFor(T,p,B.f),ts=trFor(T,p,B.f);const s=ls.map(text).join(' ');
   const one=(tk,i)=>'<div class="sm">'+blocks(tk,'',O.align?'c'+i:'')+'<div class="ca">'+esc(ts[i])+'</div></div>';
@@ -793,7 +797,7 @@ function renderMn(){
  const fl=B.f==='sa'?[gen(T,fs,fx,'…','sa',true),gen(T,fs,fx,'…','sa',false)]:[gen(T,fs,fx,'…',B.f)];
  $('#mnCard').innerHTML='<h3>'+esc(T.n)+' <span class="muted">· '+esc(T.ca)+'</span></h3>'+timeline(T.tl)+'<p class="mn">'+esc(T.mn)+'</p>'+
   (T.sig.length?'<div class="sig">'+T.sig.map(s=>'<span>'+esc(s)+'</span>').join('')+'</div>':'')+
-  '<div class="why"><div class="muted" style="font-weight:700;margin-bottom:6px">La fórmula</div><div class="sm">'+fl.map(t=>blocks(t)).join('')+'</div><p style="margin-top:8px">'+esc(T.why[B.f])+'</p></div>'}
+  '<div class="why"><div class="muted" style="font-weight:700;margin-bottom:6px">La fórmula</div><div class="sm">'+fl.map(t=>blocks(t)).join('')+'</div><p style="margin-top:8px">'+esc((T.why[B.f]||T.why.q+' Negativa: el not va darrere del subjecte (Do you not play?) o enganxat a l\'auxiliar (Don\'t you play?).'))+'</p></div>'}
 function renderFrases(anim){renderChips();renderStage();renderTable();renderMn();syncSw()}
 function randomize(){const T=curT();B.pi=Math.floor(Math.random()*P.length);if(T.cm)B.c=Math.floor(Math.random()*T.cm.length);else B.v=rnd(V).b;renderFrases()}
 
@@ -813,13 +817,13 @@ function makeQ0(only){
    opts:shuf([ok,...shuf([...c]).slice(0,3)]),ok,why:G.n+': '+G.m+(v.note?' '+v.note:''),full:v.b+', '+v.p+', '+v.pp}}
  const T=rnd(en),[v,c]=argsFor(T);
  if(type==='build'){
-  const sub=rnd(EXS),to=rnd(['neg','q']),src=contract(gen(T,sub,v,c,'pos'),'pos',O.contr),tgt=contract(gen(T,sub,v,c,to),to,O.contr);
+  const sub=rnd(EXS),to=rnd(O.nq?['neg','q','nq']:['neg','q']),src=contract(gen(T,sub,v,c,'pos'),'pos',O.contr),tgt=contract(gen(T,sub,v,c,to),to,O.contr);
   const tw=words(tgt).map(lc),alt=T3(sub.p)?{t:'they',p:'they'}:{t:'he',p:'he'};
   const d=new Set(words(contract(gen(T,alt,v,c,to),to,O.contr)).map(lc));
   if(!T.cm&&(T.id==='ps'||T.id==='pas')){d.add(vf(v,'s3'));d.add(vf(v,'p'))}
   tw.forEach(w=>d.delete(w));d.delete(alt.t);
   return{type,tid:T.id,T,form:to,src,tgt,caSrc:tr(T,sub,v,c,'pos'),ok:tw.join(' '),tiles:shuf([...tw,...shuf([...d]).slice(0,3)]),
-   ask:(to==='neg'?'Passa-la a negativa':'Passa-la a pregunta')+' <span class="muted">('+esc(T.n)+')</span>'}}
+   ask:(to==='neg'?'Passa-la a negativa':to==='nq'?'Passa-la a pregunta negativa':'Passa-la a pregunta')+' <span class="muted">('+esc(T.n)+')</span>'}}
  if(type==='gap'){
   const sub=rnd(EXS),form=rnd(['pos','neg','q']),tk=gen(T,sub,v,c,form);
   const cand=tk.map((o,i)=>i).filter(i=>(tk[i].r==='v')||(tk[i].r==='a'&&!T.noGapAux&&T.fam));
@@ -905,11 +909,11 @@ function renderConj(){
  $('#conjVerb').innerHTML='<optgroup label="Regulars">'+REG.map(o).join('')+'</optgroup><optgroup label="Irregulars">'+IRR.map(o).join('')+'</optgroup>';
  $('#conjList').innerHTML=enabled().map(T=>{
   const rows=P.map(p=>{const cell=f=>{const tk=contract(gen(T,p,v,'',f,undefined,undefined,1),f,O.contr);return[O.align?inlA(tk,f):inl(tk),text(tk),tr(T,p,v,'',f,undefined,1)]};
-   const a=cell('pos'),b=cell('neg'),c=cell('q'),y=contract(gen(T,p,v,'','sa',true),'sa',O.contr),n=contract(gen(T,p,v,'','sa',false),'sa',O.contr);
-   const rs=[a[1],b[1],c[1],text(y),text(n)].join(' ');
+   const a=cell('pos'),b=cell('neg'),c=cell('q'),q2=O.nq?cell('nq'):null,y=contract(gen(T,p,v,'','sa',true),'sa',O.contr),n=contract(gen(T,p,v,'','sa',false),'sa',O.contr);
+   const rs=[a[1],b[1],c[1],q2?q2[1]:'',text(y),text(n)].filter(Boolean).join(' ');
    const td=(l,x)=>'<td data-l="'+l+'">'+x[0]+'<div class="ca">'+esc(x[2])+'</div></td>';
-   return '<tr data-rs="'+esc(rs)+'">'+td('Positive',a)+td('Negative',b)+td('Question',c)+'<td data-l="Short answer">'+(O.align?inlA(y,'sa')+inlA(n,'sa'):inl(y)+'<br>'+inl(n))+'<div class="ca">'+esc(tr(T,p,v,'','sa',true)+' '+tr(T,p,v,'','sa',false))+'</div></td><td><button class="say" data-say="'+esc(rs)+'" aria-label="Escolta">'+SPK+'</button></td></tr>'}).join('');
-  return '<div class="card cjcard"><h3>'+esc(T.n)+' <span class="muted">· '+esc(T.ca)+'</span></h3><table class="cj"><thead><tr><th>Positive</th><th>Negative</th><th>Question</th><th>Short answer</th><th></th></tr></thead><tbody>'+rows+'</tbody></table></div>'}).join('');
+   return '<tr data-rs="'+esc(rs)+'">'+td('Positive',a)+td('Negative',b)+td('Question',c)+(q2?td('Negative question',q2):'')+'<td data-l="Short answer">'+(O.align?inlA(y,'sa')+inlA(n,'sa'):inl(y)+'<br>'+inl(n))+'<div class="ca">'+esc(tr(T,p,v,'','sa',true)+' '+tr(T,p,v,'','sa',false))+'</div></td><td><button class="say" data-say="'+esc(rs)+'" aria-label="Escolta">'+SPK+'</button></td></tr>'}).join('');
+  return '<div class="card cjcard"><h3>'+esc(T.n)+' <span class="muted">· '+esc(T.ca)+'</span></h3><table class="cj"><thead><tr><th>Positive</th><th>Negative</th><th>Question</th>'+(O.nq?'<th>Negative question</th>':'')+'<th>Short answer</th><th></th></tr></thead><tbody>'+rows+'</tbody></table></div>'}).join('');
  $('#conjList').querySelectorAll('.cj').forEach(alignSlots);syncSw()}
 function renderTips(){
  const caW=w=>{if(/\s/.test(w))return'';const i=IRRL.find(x=>x.b===w);return CAV[w]||(i&&i.ca)||''};
@@ -933,7 +937,7 @@ function renderOpts(){
  let h='';[1,2,3].forEach(l=>{h+='<div class="lvl">Nivell '+l+'</div>'+TENSES.filter(t=>t.lvl===l).map(t=>'<label><input type="checkbox" data-ot="'+t.id+'"'+(O.t.includes(t.id)?' checked':'')+'> '+esc(t.n)+' <span class="muted">· '+esc(t.ca)+'</span></label>').join('')});
  $('#tenseOpts').innerHTML=h;
  $('#exOpts').innerHTML=Object.entries(EXT).map(([k,n])=>'<label><input type="checkbox" data-oe="'+k+'"'+(O.ex.includes(k)?' checked':'')+'> '+n+'</label>').join('');
- $('#oAuto').checked=O.auto;$('#oSlow').checked=O.slow;$('#oSize').value=O.size;$('#oPh').value=O.ph;$('#oIrr').value=O.irr;$('#stats').innerHTML=statsHTML()}
+ $('#oAuto').checked=O.auto;$('#oSlow').checked=O.slow;$('#oNq').checked=!!O.nq;$('#oSize').value=O.size;$('#oPh').value=O.ph;$('#oIrr').value=O.irr;$('#stats').innerHTML=statsHTML()}
 
 /* ================= NAVEGACIÓ I ESDEVENIMENTS ================= */
 const VIEWS=['frases','conjuga','exercicis','verbs','trucs','opcions'];
@@ -956,7 +960,8 @@ document.addEventListener('click',e=>{
  if(t.dataset.grp){VG=t.dataset.grp;renderVerbs();return}
  if(t.dataset.t){B.t=t.dataset.t;renderFrases();autoStage();return}
  if(t.dataset.pi){B.pi=+t.dataset.pi;renderFrases();autoStage();return}
- if(t.dataset.f){B.f=t.dataset.f;renderChips();renderStage();renderTable();renderMn();autoStage();return}
+ if(t.dataset.nq!==undefined){B.f=B.f==='nq'?'q':'nq';renderChips();renderStage();renderTable();renderMn();autoStage();return}
+ if(t.dataset.f){B.f=t.dataset.f==='q'&&B.f==='nq'?'nq':t.dataset.f;renderChips();renderStage();renderTable();renderMn();autoStage();return}
  if(t.id==='sayStage'){say(sentFor(curT(),P[B.pi],B.f).map(text).join(' '));return}
  if(t.id==='rndStage'){randomize();autoStage();return}
  if(t.dataset.start!==undefined){startRound(t.dataset.start||null);return}
@@ -984,11 +989,12 @@ document.addEventListener('change',e=>{
  if(t.id==='oIrr'){O.irr=t.value;save();return}
  if(t.id==='conjVerb'){CJ=t.value;renderConj();return}
  if(t.id==='oSlow'){O.slow=t.checked;save();return}
+ if(t.id==='oNq'){O.nq=t.checked;save();return}
  if(t.id==='oSize'){setSize(t.value);return}
 });
 document.getElementById('rbar').addEventListener('pointerdown',e=>{if(e.target.closest('button'))e.preventDefault()});
 document.addEventListener('keydown',e=>{if($('#v-frases').hidden||e.target.matches('select,input'))return;
- const fs=['pos','neg','q','sa'];if(e.key==='ArrowRight'||e.key==='ArrowLeft'){B.f=fs[(fs.indexOf(B.f)+(e.key==='ArrowRight'?1:3))%4];renderChips();renderStage();renderTable();renderMn()}});
+ const fs=['pos','neg','q','sa'];if(e.key==='ArrowRight'||e.key==='ArrowLeft'){B.f=fs[(fs.indexOf(B.f==='nq'?'q':B.f)+(e.key==='ArrowRight'?1:3))%4];renderChips();renderStage();renderTable();renderMn()}});
 document.querySelectorAll('[data-icon]').forEach(b=>b.insertAdjacentHTML('afterbegin',SPK));
 if(!HAS_TTS)document.body.classList.add('notts');
 $('#starN').textContent=ST.stars;
